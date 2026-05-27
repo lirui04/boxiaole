@@ -1,0 +1,234 @@
+[
+  {
+    "skuNo": "58_00001",
+    "skuFullName": "招聘助手92天",
+    "productType": "招聘助手",
+    "days": 92,
+    "listPrice": 200,
+    "valid": 1
+  },
+  {
+    "skuNo": "58_00002",
+    "skuFullName": "劲爆职位（资源）-全国全品类92天",
+    "productType": "劲爆职位（资源）-全国全品类",
+    "days": 92,
+    "listPrice": 66,
+    "valid": 1
+  },
+  {
+    "skuNo": "58_00003",
+    "skuFullName": "主动开聊-100/日92天",
+    "productType": "主动开聊-100/日",
+    "days": 92,
+    "listPrice": 100,
+    "valid": 1
+  },
+  {
+    "skuNo": "58_00004",
+    "skuFullName": "超级置顶/代招公司-50个92天",
+    "productType": "超级置顶/代招公司-50个",
+    "days": 92,
+    "listPrice": 1300,
+    "valid": 0
+  },
+  {
+    "skuNo": "58_00005",
+    "skuFullName": "电话沟通92天",
+    "productType": "电话沟通",
+    "days": 92,
+    "listPrice": 600,
+    "valid": 1
+  },
+  {
+    "skuNo": "58_00006",
+    "skuFullName": "极速聊-访客代聊标准版92天",
+    "productType": "极速聊-访客代聊标准版",
+    "days": 92,
+    "listPrice": 350,
+    "valid": 1
+  },
+  {
+    "skuNo": "58_00007",
+    "skuFullName": "超级置顶/30天1次7天曝光92天",
+    "productType": "超级置顶/30天1次7天曝光",
+    "days": 92,
+    "listPrice": 1300,
+    "valid": 1
+  },
+  {
+    "skuNo": "58_00008",
+    "skuFullName": "代招公司-50个92天",
+    "productType": "代招公司-50个",
+    "days": 92,
+    "listPrice": 1300,
+    "valid": 1
+  },
+  {
+    "skuNo": "58_00009",
+    "skuFullName": "招聘助手365天",
+    "productType": "招聘助手",
+    "days": 365,
+    "listPrice": 500,
+    "valid": 1
+  },
+  {
+    "skuNo": "58_00010",
+    "skuFullName": "劲爆职位（资源）-本地/行业限类365天",
+    "productType": "劲爆职位（资源）-本地/行业限类",
+    "days": 365,
+    "listPrice": 100,
+    "valid": 1
+  },
+  {
+    "skuNo": "58_00011",
+    "skuFullName": "主动开聊-100/日365天",
+    "productType": "主动开聊-100/日",
+    "days": 365,
+    "listPrice": 300,
+    "valid": 1
+  },
+  {
+    "skuNo": "58_00012",
+    "skuFullName": "超级置顶 /代招公司-50个365天",
+    "productType": "超级置顶 /代招公司-50个",
+    "days": 365,
+    "listPrice": 2400,
+    "valid": 0
+  },
+  {
+    "skuNo": "58_00013",
+    "skuFullName": "电话沟通365天",
+    "productType": "电话沟通",
+    "days": 365,
+    "listPrice": 1780,
+    "valid": 1
+  },
+  {
+    "skuNo": "58_00014",
+    "skuFullName": "极速聊-访客代聊标准版365天",
+    "productType": "极速聊-访客代聊标准版",
+    "days": 365,
+    "listPrice": 1400,
+    "valid": 1
+  },
+  {
+    "skuNo": "58_00015",
+    "skuFullName": "超级置顶/30天1次7天曝光/不限类365天",
+    "productType": "超级置顶/30天1次7天曝光/不限类",
+    "days": 365,
+    "listPrice": 2400,
+    "valid": 1
+  },
+  {
+    "skuNo": "58_00016",
+    "skuFullName": "代招公司-50个365天",
+    "productType": "代招公司-50个",
+    "days": 365,
+    "listPrice": 2400,
+    "valid": 1
+  },
+  {
+    "skuNo": "58_00017",
+    "skuFullName": "劲爆职位（资源）-全国全品类365天",
+    "productType": "劲爆职位（资源）-全国全品类",
+    "days": 365,
+    "listPrice": 125,
+    "valid": 1
+  },
+  {
+    "skuNo": "58_00018",
+    "skuFullName": "劲爆职位 （容器）365天",
+    "productType": "劲爆职位 （容器）",
+    "days": 365,
+    "listPrice": 560,
+    "valid": 1
+  },
+  {
+    "skuNo": "58_00019",
+    "skuFullName": "劲爆职位（容器）-行业限类365天",
+    "productType": "劲爆职位（容器）-行业限类",
+    "days": 365,
+    "listPrice": 440,
+    "valid": 1
+  },
+  {
+    "skuNo": "58_00020",
+    "skuFullName": "劲爆职位（容器）-行业限类92天",
+    "productType": "劲爆职位（容器）-行业限类",
+    "days": 92,
+    "listPrice": 260,
+    "valid": 1
+  },
+  {
+    "skuNo": "GJ_00001",
+    "skuFullName": "劲爆职位（资源）-限5大类30天",
+    "productType": "劲爆职位（资源）-限5大类",
+    "days": 30,
+    "listPrice": 50,
+    "valid": 1
+  },
+  {
+    "skuNo": "GJ_00002",
+    "skuFullName": "主动开聊-60/日30天",
+    "productType": "主动开聊-60/日",
+    "days": 30,
+    "listPrice": 50,
+    "valid": 1
+  },
+  {
+    "skuNo": "GJ_00003",
+    "skuFullName": "招聘助手365天",
+    "productType": "招聘助手",
+    "days": 365,
+    "listPrice": 500,
+    "valid": 0
+  },
+  {
+    "skuNo": "GJ_00004",
+    "skuFullName": "劲爆职位（容器）-限5大类限城365天",
+    "productType": "劲爆职位（容器）-限5大类限城",
+    "days": 365,
+    "listPrice": 150,
+    "valid": 1
+  },
+  {
+    "skuNo": "GJ_00005",
+    "skuFullName": "主动开聊-200/日365天",
+    "productType": "主动开聊-200/日",
+    "days": 365,
+    "listPrice": 600,
+    "valid": 1
+  },
+  {
+    "skuNo": "GJ_00006",
+    "skuFullName": "超级置顶/30天1次7天曝光/不限类365天",
+    "productType": "超级置顶/30天1次7天曝光/不限类",
+    "days": 365,
+    "listPrice": 2400,
+    "valid": 0
+  },
+  {
+    "skuNo": "GJ_00007",
+    "skuFullName": "电话沟通365天",
+    "productType": "电话沟通",
+    "days": 365,
+    "listPrice": 1780,
+    "valid": 0
+  },
+  {
+    "skuNo": "GJ_00008",
+    "skuFullName": "极速聊-访客代聊标准版365天",
+    "productType": "极速聊-访客代聊标准版",
+    "days": 365,
+    "listPrice": 1400,
+    "valid": 0
+  },
+  {
+    "skuNo": "GJ_00009",
+    "skuFullName": "劲爆职位（容器）-限5大类365天",
+    "productType": "劲爆职位（容器）-限5大类",
+    "days": 365,
+    "listPrice": 220,
+    "valid": 1
+  }
+]

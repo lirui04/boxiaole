@@ -1,0 +1,23 @@
+# WorkBuddy internal
+.workbuddy/
+
+# Temp/intermediate data
+sec58.json
+sec58_clean.json
+sec58_final.json
+secgj.json
+secgj_clean.json
+secgj_final.json
+v11_data58.json
+v11_datagj.json
+data58.json
+datagj.json
+new_*.js
+new_*.json
+*.pyc
+__pycache__/
+
+# Debug
+debug_*.py
+verify_data.py
+test_group.py
