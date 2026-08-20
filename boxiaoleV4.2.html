@@ -1,0 +1,1966 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>伯小乐组合包定价工具 V4.2 (V1.2数据)</title>
+<style>
+:root {
+  --bg: #f5f6f8; --card-bg: #fff; --primary: #1677ff; --primary-light: #e6f4ff;
+  --success: #52c41a; --warning: #faad14; --danger: #ff4d4f;
+  --text: #1f1f1f; --text-secondary: #666; --text-muted: #999;
+  --border: #e0e0e0; --border-light: #f0f0f0; --radius: 8px; --shadow: 0 1px 4px rgba(0,0,0,0.05);
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif; background: var(--bg); color: var(--text); line-height: 1.4; min-height: 100vh; }
+header { background: linear-gradient(135deg, #1677ff 0%, #4096ff 100%); color: #fff; padding: 12px 24px; position: sticky; top: 0; z-index: 100; display:flex; justify-content:space-between; align-items:center; }
+header h1 { font-size: 18px; font-weight: 700; }
+header .subtitle { font-size: 11px; opacity: 0.85; }
+.container { max-width: 100%; margin: 0 auto; padding: 10px 12px; }
+
+.tabs { display: flex; gap: 4px; margin-bottom: 10px; background: var(--card-bg); border-radius: var(--radius); padding: 3px; box-shadow: var(--shadow); }
+.tab-btn { flex: 1; padding: 8px 16px; border: none; background: transparent; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 600; color: var(--text-secondary); transition: all 0.2s; }
+.tab-btn.active { background: var(--primary); color: #fff; }
+.tab-btn:hover:not(.active) { background: var(--primary-light); color: var(--primary); }
+
+.section { background: var(--card-bg); border-radius: var(--radius); box-shadow: var(--shadow); margin-bottom: 10px; overflow: hidden; }
+.section-header { padding: 8px 12px; background: #fafafa; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; cursor: pointer; user-select: none; }
+.section-header:hover { background: #f5f5f5; }
+.section-header h3 { font-size: 12px; font-weight: 700; color: var(--primary); }
+.section-header .badge { font-size: 10px; background: var(--primary-light); color: var(--primary); padding: 1px 8px; border-radius: 10px; }
+.section-body { overflow-x: auto; }
+.section-body.collapsed { display: none; }
+
+/* COMPACT TABLE */
+.pricing-table { width: 100%; border-collapse: collapse; font-size: 10px; table-layout: fixed; }
+.pricing-table th, .pricing-table td { padding: 4px 5px; border-right: 1px solid var(--border-light); text-align: center; vertical-align: middle; white-space: nowrap; }
+.pricing-table th:last-child, .pricing-table td:last-child { border-right: none; }
+.pricing-table thead th { background: #e6f0ff; color: var(--primary); font-weight: 700; font-size: 9px; padding: 6px 4px; border-bottom: 2px solid #91caff; }
+.pricing-table thead th.col-name { width: 9%; text-align: left; padding-left: 8px; }
+.pricing-table thead th.col-pname { width: 8%; min-width: 80px; }
+.pricing-table thead th.col-dur { width: 3.5%; }
+.pricing-table thead th.col-qty { width: 5%; }
+.pricing-table thead th.col-calc { width: 5.5%; }
+.pricing-table thead th.col-act { width: 3.5%; }
+.pricing-table thead th.col-pub-limit { width: 10%; }
+.pricing-table thead th.col-base { background: #d6e8ff; color: #096dd9; font-style: italic; width: 5.5%; }
+.pricing-table thead th.col-base .sku-name { display: block; font-size: 8px; color: #666; font-weight: 400; font-style: normal; margin-top: 1px; line-height: 1.2; white-space: normal; word-break: break-all; }
+.pricing-table .base-price-row td { background: #f0f5ff; font-weight: 600; color: #1677ff; font-size: 10px; padding: 6px 4px; border-bottom: 2px solid #91caff; }
+.pricing-table tbody tr.data-row { border-bottom: 1px solid var(--border-light); }
+.pricing-table tbody tr.data-row.modified { background: #fffbe6 !important; }
+.pricing-table tbody tr.data-row td.name { text-align: left; padding-left: 6px; font-weight: 500; font-size: 10px; max-width: 130px; overflow: hidden; text-overflow: ellipsis; }
+.pricing-table tbody tr.data-row td input { width: 48px; padding: 3px 4px; border: 1px solid var(--border); border-radius: 3px; text-align: center; font-size: 10px; background: #fff; }
+.pricing-table tbody tr.data-row td input:focus { outline: none; border-color: var(--primary); }
+.pricing-table tbody tr.data-row td input.editable { background: #fffbe6; border-color: #faad14; }
+.pricing-table tbody tr.data-row td select { padding: 2px 3px; border: 1px solid var(--border); border-radius: 3px; font-size: 9px; background: #fff; cursor: pointer; }
+.pricing-table tbody tr.data-row td .calc-price { font-weight: 700; color: #1677ff; font-size: 10px; }
+.pricing-table tbody tr.data-row td .calc-discount { font-weight: 600; }
+.pricing-table tbody tr.data-row td .calc-discount.good { color: var(--success); }
+.pricing-table tbody tr.data-row td .calc-discount.warn { color: var(--warning); }
+.pricing-table tbody tr.data-row td .calc-discount.bad { color: var(--danger); }
+.pricing-table tbody tr.data-row td .calc-act { color: #722ed1; font-weight: 600; font-size: 10px; }
+.pricing-table tbody tr.formula-row td { padding: 3px 8px; font-size: 9px; color: #aaa; text-align: left; border-bottom: 1px dashed #eee; background: #fcfcfc; overflow: hidden; text-overflow: ellipsis; }
+
+.action-bar { display: flex; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; }
+.btn { padding: 7px 16px; border: none; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600; transition: all 0.2s; display: inline-flex; align-items: center; gap: 4px; }
+.btn-primary { background: var(--primary); color: #fff; }
+.btn-primary:hover { background: #4096ff; }
+.btn-success { background: var(--success); color: #fff; }
+.btn-success:hover { background: #73d13d; }
+.btn-warning { background: var(--warning); color: #fff; }
+.btn-warning:hover { background: #ffc53d; }
+.btn-danger { background: var(--danger); color: #fff; }
+.btn-danger:hover { background: #ff7875; }
+.btn-purple { background: #722ed1; color: #fff; }
+.btn-purple:hover { background: #9254de; }
+.btn-outline { background: #fff; color: var(--primary); border: 1px solid var(--primary); }
+.btn-outline:hover { background: var(--primary-light); }
+.btn-sm { padding: 4px 10px; font-size: 10px; }
+.btn-xs { padding: 2px 6px; font-size: 9px; border-radius: 3px; }
+
+.modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); z-index: 200; display: flex; align-items: center; justify-content: center; }
+.modal { background: #fff; border-radius: 12px; box-shadow: 0 8px 32px rgba(0,0,0,0.18); width: 95%; max-width: 1200px; max-height: 85vh; overflow-y: auto; }
+.modal.small { max-width: 700px; }
+.modal-header { padding: 14px 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; position: sticky; top:0; background: #fff; z-index: 5; }
+.modal-header h3 { font-size: 15px; }
+.modal-body { padding: 16px 20px; }
+.modal-footer { padding: 12px 20px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 8px; position: sticky; bottom:0; background: #fff; }
+.form-group { margin-bottom: 8px; }
+.form-group label { display: block; font-size: 11px; font-weight: 600; margin-bottom: 3px; color: var(--text-secondary); }
+.form-group input, .form-group select { width: 100%; padding: 6px 10px; border: 1px solid var(--border); border-radius: 5px; font-size: 12px; }
+.form-group select { cursor: pointer; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+.form-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+
+.sku-table { width: 100%; border-collapse: collapse; font-size: 11px; }
+.sku-table th { background: #e6f0ff; color: var(--primary); font-weight: 700; padding: 8px; border-bottom: 2px solid #91caff; }
+.sku-table td { padding: 6px; border-bottom: 1px solid var(--border-light); text-align: center; }
+.sku-table td input { width: 100%; padding: 3px 4px; border: 1px solid var(--border); border-radius: 3px; font-size: 10px; text-align: center; }
+.sku-table td input.edit-mode { background: #fffbe6; border-color: #faad14; }
+.sku-table .sku-invalid td { color: #ccc; text-decoration: line-through; }
+
+.legend { display: flex; gap: 12px; margin-bottom: 8px; font-size: 10px; color: var(--text-muted); flex-wrap: wrap; }
+.legend-item { display: flex; align-items: center; gap: 3px; }
+.legend-dot { width: 8px; height: 8px; border-radius: 50%; }
+.legend-dot.editable { background: #faad14; }
+.legend-dot.calculated { background: #1677ff; }
+.legend-dot.readonly { background: #52c41a; }
+
+/* Read-only value display */
+.ro-val { display: inline-block; padding: 3px 4px; font-size: 10px; color: var(--text); font-weight: 500; min-width: 40px; text-align: center; }
+.ro-val.ro-pname { min-width: 100px; text-align: left; }
+.ro-val.ro-price { font-weight: 700; color: #1677ff; min-width: 62px; }
+.row-edit-btn { color: #bbb; cursor: pointer; font-size: 13px; padding: 0 2px; border: none; background: none; line-height: 1; }
+.row-edit-btn:hover { color: var(--primary); }
+.row-save-btn { color: var(--success); cursor: pointer; font-size: 14px; padding: 0 3px; border: none; background: none; font-weight: 700; }
+.row-save-btn:hover { color: #389e0d; }
+.row-cancel-btn { color: #ccc; cursor: pointer; font-size: 14px; padding: 0 2px; border: none; background: none; }
+.row-cancel-btn:hover { color: var(--danger); }
+.row-edit-input { width: 48px; padding: 3px 4px; border: 1px solid var(--primary); border-radius: 3px; text-align: center; font-size: 10px; background: #fffbe6; }
+.row-edit-input:focus { outline: none; box-shadow: 0 0 0 2px rgba(22,119,255,0.2); }
+.data-row.row-editing td { background: #fffbe6 !important; }
+.data-row.row-editing td.name { background: #fffbe6 !important; }
+
+.toast { position: fixed; top: 20px; right: 20px; background: #333; color: #fff; padding: 10px 20px; border-radius: 6px; font-size: 13px; z-index: 300; animation: slideIn 0.3s ease; }
+@keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+.sku-select-card { background: #f5f7fa; border-radius: 8px; padding: 12px; margin-bottom: 12px; border: 1px solid var(--border); }
+.sku-select-card h4 { font-size: 12px; color: var(--primary); margin-bottom: 8px; display:flex; justify-content:space-between; align-items:center; }
+.sku-select-card .field-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+.sku-select-card .selected-sku { font-size: 10px; color: var(--success); margin-top: 2px; }
+.section-name-edit { font-size:10px; color:#999; margin-top:3px; }
+
+.comparison-panel { background: var(--card-bg); border-radius: var(--radius); box-shadow: var(--shadow); padding: 16px; margin-bottom: 10px; border-left: 4px solid var(--warning); }
+.comparison-panel h3 { font-size: 14px; margin-bottom: 10px; color: var(--warning); }
+.comp-grid { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 10px; }
+.comp-card { background: #fafafa; border-radius: 6px; padding: 10px; }
+.comp-card h4 { font-size: 11px; margin-bottom: 6px; color: var(--text-secondary); }
+.comp-card .value { font-size: 16px; font-weight: 700; }
+.comp-card.before .value { color: var(--text-secondary); }
+.comp-card.after .value { color: var(--primary); }
+.comp-card.diff-positive .value { color: var(--success); }
+.comp-card.diff-negative .value { color: var(--danger); }
+.adv-item { padding: 4px 8px; margin: 3px 0; border-radius: 4px; font-size: 11px; }
+.adv-item.pro { background: #f6ffed; color: #389e0d; }
+.adv-item.con { background: #fff2f0; color: #cf1322; }
+
+.section-name-row { display: flex; gap:6px; align-items:center; margin-bottom:0; }
+.section-name-row input { flex:1; }
+
+/* Inline new package form */
+.new-pkg-row { border-top: 2px dashed #91caff; }
+.new-pkg-row td { padding: 6px 5px; background: #f0f8ff; }
+.new-pkg-row td input, .new-pkg-row td select { width: 48px; padding: 3px 4px; border: 1px solid #91caff; border-radius: 3px; text-align: center; font-size: 10px; }
+.new-pkg-row td input.name-input { width: 120px; text-align: left; }
+.new-pkg-row td input.dur-input { width: 38px; }
+.new-pkg-row td input.price-input { width: 72px; font-weight: 700; color: #1677ff; }
+.new-pkg-form { width: 100%; border-collapse: collapse; font-size: 10px; margin-top: 6px; border-top: 2px dashed #91caff; }
+.new-pkg-form td { padding: 6px 5px; background: #f0f8ff; vertical-align: middle; text-align: center; }
+.new-pkg-form td input, .new-pkg-form td select { padding: 3px 4px; border: 1px solid #91caff; border-radius: 3px; text-align: center; font-size: 10px; }
+.new-pkg-form td input.name-input { width: 120px; text-align: left; }
+.new-pkg-form td input.dur-input { width: 38px; }
+.new-pkg-form td input.qty-input { width: 48px; }
+.new-pkg-form td input.price-input { width: 72px; font-weight: 700; color: #1677ff; }
+.add-pkg-bar { text-align: center; padding: 6px 0; border-top: 1px solid var(--border-light); }
+.section-body .add-pkg-bar { border-top: 2px dashed #91caff; }
+.pkg-del-btn { color: #ccc; cursor: pointer; font-size: 14px; line-height: 1; padding: 0 3px; border: none; background: none; }
+.pkg-del-btn:hover { color: var(--danger); }
+.compare-result-table { width:100%; border-collapse:collapse; font-size:11px; margin-top:8px; }
+.compare-result-table th { background:#f0f5ff; color:var(--primary); font-weight:700; padding:6px 8px; border:1px solid var(--border); text-align:center; }
+.compare-result-table td { padding:5px 8px; border:1px solid var(--border); text-align:center; vertical-align:middle; }
+.compare-result-table .pkg-name { text-align:left; font-weight:600; color:var(--text); max-width:160px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.compare-result-table .base-pkg { background:#fffbe6; }
+.compare-result-table .target-pkg { background:#e6f7ff; }
+.compare-result-table .highlight-better { color:var(--success); font-weight:700; }
+.compare-result-table .highlight-worse { color:var(--danger); font-weight:700; }
+.compare-result-table .section-tag { font-size:9px; color:#999; margin-bottom:2px; }
+.compare-empty { text-align:center; color:#999; padding:20px; font-size:12px; }
+.compare-checkbox { margin-right:6px; cursor:pointer; }
+.compare-pkg-item { display:flex; align-items:center; padding:4px 6px; border-radius:4px; font-size:11px; cursor:pointer; }
+.compare-pkg-item:hover { background:#e6f0ff; }
+.compare-pkg-item .pkg-mode-tag { font-size:9px; padding:1px 4px; border-radius:3px; margin-left:4px; }
+.compare-pkg-item .tag-new { background:#fffbe6; color:#d48806; }
+.compare-pkg-item .tag-mod { background:#fff1e6; color:#d4380d; }
+.compare-pkg-item .pkg-price { font-size:10px; color:var(--primary); font-weight:600; margin-left:auto; min-width:60px; text-align:right; }
+
+/* Advantage Analysis Page */
+.analysis-section { background: var(--card-bg); border-radius: var(--radius); box-shadow: var(--shadow); margin-bottom:14px; overflow:hidden; }
+.analysis-header { padding:10px 14px; background: linear-gradient(135deg, #ff4d4f 0%, #ff7a45 100%); color:#fff; }
+.analysis-header h3 { font-size:14px; font-weight:700; }
+.analysis-body { padding:14px; }
+.analysis-card { padding:12px 14px; border-radius:6px; margin-bottom:10px; border-left:4px solid; }
+.analysis-card.advantage { background:#f6ffed; border-color:var(--success); }
+.analysis-card.disadvantage { background:#fffbe6; border-color:var(--warning); }
+.analysis-card.inversion { background:#fff2f0; border-color:var(--danger); }
+.analysis-card h4 { font-size:12px; margin-bottom:4px; }
+.analysis-card p { font-size:11px; color:var(--text-secondary); margin:2px 0; }
+.analysis-card .suggestion { background:rgba(255,255,255,0.7); padding:6px 10px; border-radius:4px; margin-top:6px; font-size:11px; border:1px dashed var(--border); }
+.analysis-table { width:100%; border-collapse:collapse; font-size:10px; }
+.analysis-table th { background:#fafafa; padding:4px 6px; border:1px solid var(--border); text-align:center; font-weight:600; }
+.analysis-table td { padding:4px 6px; border:1px solid var(--border); text-align:center; }
+.analysis-summary { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:10px; margin-bottom:12px; }
+.analysis-summary-card { padding:10px 14px; border-radius:6px; text-align:center; }
+.analysis-summary-card .num { font-size:22px; font-weight:800; }
+.analysis-summary-card .lbl { font-size:10px; color:var(--text-secondary); margin-top:2px; }
+.btn-danger-outline { border:1px solid var(--danger); color:var(--danger); background:#fff; padding:6px 14px; border-radius:var(--radius); cursor:pointer; font-size:12px; font-weight:600; transition:all 0.2s; }
+.btn-danger-outline:hover { background:var(--danger); color:#fff; }
+.btn-disclosure { border:1px solid #722ed1; color:#722ed1; background:#fff; padding:6px 14px; border-radius:var(--radius); cursor:pointer; font-size:12px; font-weight:600; transition:all 0.2s; }
+.btn-disclosure:hover { background:#722ed1; color:#fff; }
+
+/* Product Name Column */
+.col-pname { width: 120px; min-width: 100px; }
+
+/* Disclosure Table */
+.disclosure-table { width:100%; border-collapse:collapse; font-size:11px; }
+.disclosure-table th { background:#f9f0ff; color:#722ed1; font-weight:700; padding:8px 10px; border:1px solid var(--border); text-align:center; }
+.disclosure-table th:first-child { min-width:140px; }
+.disclosure-table th:nth-child(2) { min-width:80px; }
+.disclosure-table td { padding:6px 10px; border:1px solid var(--border); text-align:center; vertical-align:middle; }
+.disclosure-table td.pname { text-align:left; font-weight:600; }
+.disclosure-table td.benefits { text-align:left; font-size:10px; line-height:1.5; }
+.disclosure-table td:nth-child(2) { color:var(--primary); font-weight:600; font-size:11px; }
+.disclosure-table .benefit-tag { display:inline-block; background:#e6f0ff; color:var(--primary); padding:1px 6px; border-radius:3px; margin:1px 3px 1px 0; font-size:10px; white-space:nowrap; }
+.disclosure-table .sep-tag { display:inline-block; background:#f6ffed; color:var(--success); padding:1px 6px; border-radius:3px; margin:1px 3px 1px 0; font-size:10px; white-space:nowrap; }
+</style>
+<script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+</head>
+<body>
+
+<header>
+  <div><h1>伯小乐 组合包定价工具 V4.0</h1>
+  <div class="subtitle">58同城伯小乐/职小乐 / 赶集直招 三模式 | V1.2数据 | 实时计算 | 版本保存导出</div></div>
+</header>
+
+<div class="container">
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot readonly"></div> 只读展示（点击 ✎ 编辑）</div>
+    <div class="legend-item"><div class="legend-dot calculated"></div> 自动计算</div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchMode('58')">58同城 · 伯小乐计算器</button>
+    <button class="tab-btn" onclick="switchMode('zhixiaole')">58同城 · 职小乐计算器</button>
+    <button class="tab-btn" onclick="switchMode('ganji')">赶集直招 · 伯小乐计算器</button>
+  </div>
+
+  <div class="action-bar">
+    <button class="btn btn-purple" onclick="showSectionManager()">伯小乐套餐区管理</button>
+    <button class="btn btn-primary" onclick="showSkuModal()">SKU 单品刊例价</button>
+    <button class="btn btn-warning" onclick="showCompare()">对比定价选择</button>
+    <button class="btn btn-success" onclick="exportData()">导出数据</button>
+    <button class="btn btn-disclosure" onclick="showDisclosure()">刊例价披露</button>
+    <button class="btn btn-outline" onclick="triggerUpload()" title="上传V1.2.xlsx更新组合包数据">📁 上传更新Excel</button>
+    <input type="file" id="xlsxFileInput" accept=".xlsx,.xls" style="display:none;" onchange="handleXlsxUpload(event)">
+    <button class="btn btn-outline" onclick="resetAll()">重置全部</button>
+    <button class="btn btn-success" onclick="saveVersion()" title="保存当前版本到本地">💾 保存版本</button>
+    <button class="btn btn-primary" onclick="exportVersionHTML()" title="导出当前版本为HTML文件">📤 导出版本HTML</button>
+    <span id="versionBadge" style="font-size:11px;color:#999;padding:4px 8px;background:#f5f5f5;border-radius:4px;">未保存</span>
+  </div>
+
+  <div class="comparison-panel" id="comparisonPanel" style="display:none;">
+    <h3>修改前后对比分析</h3><div id="compContent"></div>
+  </div>
+
+  <div id="mainContent"></div>
+</div>
+
+<!-- SKU Modal -->
+<div class="modal-overlay" id="skuModal" style="display:none;">
+  <div class="modal">
+    <div class="modal-header"><h3>单品刊例价 — SKU 列表（可增/改/删）</h3><button class="btn btn-outline btn-sm" onclick="closeModal('skuModal')">×</button></div>
+    <div class="modal-body" style="overflow-x:auto;">
+      <div style="margin-bottom:10px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+        <button class="btn btn-success btn-sm" onclick="addSkuRow()">+ 新增SKU</button>
+        <span style="font-size:11px;color:#999;">共 <b id="skuCount">0</b> 条有效SKU</span>
+        <span style="margin-left:auto;font-size:11px;color:#666;">产品类型筛选：</span>
+        <div id="skuTypeFilterWrap" style="position:relative;display:inline-block;min-width:160px;">
+          <button id="skuTypeFilterBtn" onclick="toggleSkuFilterDropdown(event)" style="width:100%;padding:3px 8px;border:1px solid var(--border);border-radius:4px;font-size:11px;background:#fff;cursor:pointer;text-align:left;display:flex;align-items:center;justify-content:space-between;gap:6px;">
+            <span id="skuTypeFilterLabel">全部产品类型</span>
+            <span style="font-size:9px;color:#999;">▼</span>
+          </button>
+          <div id="skuTypeDropdown" style="display:none;position:absolute;top:100%;left:0;z-index:1000;background:#fff;border:1px solid var(--border);border-radius:4px;box-shadow:0 4px 12px rgba(0,0,0,0.12);min-width:200px;max-height:320px;overflow:hidden;margin-top:2px;">
+            <div style="padding:6px 8px;border-bottom:1px solid #eee;">
+              <input id="skuTypeSearch" type="text" placeholder="输入关键词筛选..." oninput="filterSkuTypeOptions()" style="width:100%;padding:4px 6px;border:1px solid #e8e8e8;border-radius:3px;font-size:11px;box-sizing:border-box;">
+            </div>
+            <div style="padding:4px 8px;border-bottom:1px solid #eee;display:flex;gap:8px;">
+              <button type="button" onclick="selectAllSkuTypes()" style="padding:0;border:none;background:none;font-size:10px;color:var(--primary);cursor:pointer;">全选</button>
+              <button type="button" onclick="deselectAllSkuTypes()" style="padding:0;border:none;background:none;font-size:10px;color:#999;cursor:pointer;">取消全选</button>
+            </div>
+            <div id="skuTypeOptions" style="max-height:200px;overflow-y:auto;padding:2px 4px;"></div>
+          </div>
+        </div>
+      </div>
+      <table class="sku-table" id="skuTable">
+        <thead><tr><th style="width:90px;">sku NO</th><th style="min-width:200px;">sku全称</th><th style="min-width:120px;">产品类型</th><th style="width:80px;">售卖时间</th><th style="width:80px;">刊例价</th><th style="width:70px;">有效</th><th style="width:80px;">操作</th></tr></thead>
+        <tbody id="skuTableBody"></tbody>
+      </table>
+    </div>
+    <div class="modal-footer"><button class="btn btn-outline" onclick="exportSkuCsv()">导出CSV</button><button class="btn btn-outline" onclick="closeModal('skuModal')">取消</button><button class="btn btn-primary" onclick="saveAllSku()">保存全部</button></div>
+  </div>
+</div>
+
+<!-- Section Manager Modal -->
+<div class="modal-overlay" id="sectionManagerModal" style="display:none;">
+  <div class="modal">
+    <div class="modal-header"><h3>伯小乐套餐区管理 —— 编辑名称 / SKU选取 / 增删套餐区</h3><button class="btn btn-outline btn-sm" onclick="closeModal('sectionManagerModal')">×</button></div>
+    <div class="modal-body">
+      <div style="margin-bottom:12px;display:flex;gap:8px;">
+        <button class="btn btn-success btn-sm" onclick="addNewSectionInManager()">+ 新增套餐区</button>
+      </div>
+      <div id="sectionManagerContent"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('sectionManagerModal')">取消</button>
+      <button class="btn btn-primary" onclick="saveSectionManager()">保存全部</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ==================== SKU DATA (from V1.2.xlsx) ====================
+let skuData = [
+  {skuNo:"58_00001",skuFullName:"招聘助手92天",productType:"招聘助手",days:92,listPrice:200,valid:1},
+  {skuNo:"58_00002",skuFullName:"劲爆职位（资源）-全国全品类92天",productType:"劲爆职位（资源）-全国全品类",days:92,listPrice:66,valid:1},
+  {skuNo:"58_00003",skuFullName:"主动开聊-100/日92天",productType:"主动开聊-100/日",days:92,listPrice:100,valid:1},
+  {skuNo:"58_00004",skuFullName:"超级置顶/代招公司-50个92天",productType:"超级置顶/代招公司-50个",days:92,listPrice:1300,valid:0},
+  {skuNo:"58_00005",skuFullName:"电话沟通92天",productType:"电话沟通",days:92,listPrice:600,valid:1},
+  {skuNo:"58_00006",skuFullName:"极速聊-访客代聊标准版92天",productType:"极速聊-访客代聊标准版",days:92,listPrice:350,valid:1},
+  {skuNo:"58_00007",skuFullName:"超级置顶/30天1次7天曝光92天",productType:"超级置顶/30天1次7天曝光",days:92,listPrice:1300,valid:1},
+  {skuNo:"58_00008",skuFullName:"代招公司-50个92天",productType:"代招公司-50个",days:92,listPrice:1300,valid:1},
+  {skuNo:"58_00009",skuFullName:"招聘助手365天",productType:"招聘助手",days:365,listPrice:500,valid:1},
+  {skuNo:"58_00010",skuFullName:"劲爆职位（资源）-本地/行业限类365天",productType:"劲爆职位（资源）-本地/行业限类",days:365,listPrice:100,valid:1},
+  {skuNo:"58_00011",skuFullName:"主动开聊-100/日365天",productType:"主动开聊-100/日",days:365,listPrice:300,valid:1},
+  {skuNo:"58_00012",skuFullName:"超级置顶 /代招公司-50个365天",productType:"超级置顶 /代招公司-50个",days:365,listPrice:2400,valid:0},
+  {skuNo:"58_00013",skuFullName:"电话沟通365天",productType:"电话沟通",days:365,listPrice:1780,valid:1},
+  {skuNo:"58_00014",skuFullName:"极速聊-访客代聊标准版365天",productType:"极速聊-访客代聊标准版",days:365,listPrice:1400,valid:1},
+  {skuNo:"58_00015",skuFullName:"超级置顶/30天1次7天曝光/不限类365天",productType:"超级置顶/30天1次7天曝光/不限类",days:365,listPrice:2400,valid:1},
+  {skuNo:"58_00016",skuFullName:"代招公司-50个365天",productType:"代招公司-50个",days:365,listPrice:2400,valid:1},
+  {skuNo:"58_00017",skuFullName:"劲爆职位（资源）-全国全品类365天",productType:"劲爆职位（资源）-全国全品类",days:365,listPrice:125,valid:1},
+  {skuNo:"58_00018",skuFullName:"劲爆职位 （容器）-全国全品类365天",productType:"劲爆职位 （容器）-全国全品类",days:365,listPrice:560,valid:1},
+  {skuNo:"58_00019",skuFullName:"劲爆职位（容器）-行业限类365天",productType:"劲爆职位（容器）-行业限类",days:365,listPrice:440,valid:1},
+  {skuNo:"58_00020",skuFullName:"劲爆职位（容器）-行业限类92天",productType:"劲爆职位（容器）-行业限类",days:92,listPrice:388,valid:1},
+  {skuNo:"58_00021",skuFullName:"劲爆职位 （容器）-全国全品类92天",productType:"劲爆职位 （容器）-全国全品类",days:92,listPrice:430,valid:1},
+  {skuNo:"GJ_00001",skuFullName:"劲爆职位（资源）-限5大类30天",productType:"劲爆职位（资源）-限5大类",days:30,listPrice:50,valid:1},
+  {skuNo:"GJ_00002",skuFullName:"主动开聊-60/日30天",productType:"主动开聊-60/日",days:30,listPrice:50,valid:1},
+  {skuNo:"GJ_00003",skuFullName:"招聘助手365天",productType:"招聘助手",days:365,listPrice:500,valid:0},
+  {skuNo:"GJ_00004",skuFullName:"劲爆职位（容器）-限5大类限城365天",productType:"劲爆职位（容器）-限5大类限城",days:365,listPrice:150,valid:1},
+  {skuNo:"GJ_00005",skuFullName:"主动开聊-200/日365天",productType:"主动开聊-200/日",days:365,listPrice:600,valid:1},
+  {skuNo:"GJ_00006",skuFullName:"超级置顶/30天1次7天曝光/不限类365天",productType:"超级置顶/30天1次7天曝光/不限类",days:365,listPrice:2400,valid:0},
+  {skuNo:"GJ_00007",skuFullName:"电话沟通365天",productType:"电话沟通",days:365,listPrice:1780,valid:0},
+  {skuNo:"GJ_00008",skuFullName:"极速聊-访客代聊标准版365天",productType:"极速聊-访客代聊标准版",days:365,listPrice:1400,valid:0},
+  {skuNo:"GJ_00009",skuFullName:"劲爆职位（容器）-限5大类365天",productType:"劲爆职位（容器）-限5大类",days:365,listPrice:220,valid:1},
+];
+
+// ==================== FORMULAS ====================
+function calcTotal(C,D,E,F,G,H,c,d,e,f,g,h){ return C*c + D*d + C*e + (F||0)*(f||0) + (G||0)*(g||0) + (H||0)*(h||0); }
+function calcSell(I,C){ if(C<=0)return I; return Math.ceil(I/C/100)*100; }
+function calcDisc(J,C,I){ if(I<=0)return 1; return (J*C)/I; }
+function calcAct(J,L){ if(L==='有')return J; return Math.round(J/0.6/100)*100; }
+function deepClone(o){ return JSON.parse(JSON.stringify(o)); }
+
+// ==================== 58 DATA (from V1.2.xlsx) ====================
+function get58Data(){ return {
+  sections: [
+    {name:"定制/框架季度",base:{C:200,D:66,E:100,F:1300,G:1780,H:1400,skuC:'58_00001',skuD:'58_00002',skuE:'58_00003',skuF:'58_00007',skuG:'58_00013',skuH:'58_00014'},packages:[
+      {name:'伯小乐-全国-季度',dur:92,C:1,D:3,E:100,J:500,L:'有',M:800,N:'全职（除就业培训）',productName:'伯小乐-G'},
+    ]},
+    {name:"套餐年度—本地/行业",base:{C:500,D:100,E:300,F:2400,G:1780,H:1400,skuC:'58_00009',skuD:'58_00010',skuE:'58_00011',skuF:'58_00015',skuG:'58_00013',skuH:'58_00014'},packages:[
+      {name:'伯小乐-本地-行业限类-季度',dur:365,C:1,D:8,E:100,J:1600,L:'有',M:2700,N:'全职（除就业培训）',productName:'伯小乐-A1'},
+      {name:'伯小乐-全国-行业限类',dur:365,C:1,D:10,E:100,J:1800,L:'有',M:3000,N:'主营“家政服务”二级类目不限，其余非主营最多5个',productName:'伯小乐-A2'},
+      {name:'伯小乐-全国-行业限类',dur:365,C:1,D:10,E:100,J:1800,L:'有',M:3000,N:'主营“普工/技工”“生产制造”二级类目不限，其余非主营最多5个',productName:'伯小乐-A3'},
+    ]},
+    {name:"套餐年度—全国",base:{C:500,D:125,E:300,F:2400,G:1780,H:1400,skuC:'58_00009',skuD:'58_00017',skuE:'58_00011',skuF:'58_00015',skuG:'58_00013',skuH:'58_00014'},packages:[
+      {name:'伯小乐-全国-单人',dur:365,C:1,D:5,E:100,J:1500,L:'有',M:2500,N:'全职（除就业培训）',productName:'伯小乐-A4'},
+      {name:'伯小乐-全国-单人',dur:365,C:1,D:8,E:100,J:1800,L:'有',M:3000,N:'全职（除就业培训）',productName:'伯小乐-A'},
+      {name:'伯小乐-全国-三人',dur:365,C:3,D:24,E:100,J:1800,L:'有',M:3000,N:'全职（除就业培训）',productName:'伯小乐-A'},
+      {name:'伯小乐-全国-四人',dur:365,C:4,D:32,E:100,J:1800,L:'有',M:3000,N:'全职（除就业培训）',productName:'伯小乐-A'},
+      {name:'伯小乐-全国-五人',dur:365,C:5,D:40,E:100,J:1800,L:'有',M:3000,N:'全职（除就业培训）',productName:'伯小乐-A'},
+    ]},
+    {name:"定制/框架年度",base:{C:500,D:125,E:300,F:2400,G:1780,H:1400,skuC:'58_00009',skuD:'58_00017',skuE:'58_00011',skuF:'58_00015',skuG:'58_00013',skuH:'58_00014'},packages:[
+      {name:'伯小乐-标准版',dur:365,C:1,D:8,E:100,J:1800,L:'有',M:3000,N:'全职（除就业培训）',productName:'伯小乐-A'},
+      {name:'伯小乐-B-已下线',dur:365,C:1,D:0,E:100,J:800,L:'无',M:800,N:'全职（除就业培训）',productName:'伯小乐-B'},
+    ]},
+    {name:"定制/框架年度—行业/特批",base:{C:500,D:125,E:0,F:2400,G:1780,H:1400,skuC:'58_00009',skuD:'58_00017',skuE:'',skuF:'58_00015',skuG:'58_00013',skuH:'58_00014'},packages:[
+      {name:'伯小乐-裸包',dur:365,C:1,D:0,E:0,J:500,L:'有',M:800,N:'全职（除就业培训）',productName:'伯小乐-B1'},
+      {name:'伯小乐-招生培训',dur:365,C:1,D:0,E:0,J:500,L:'有',M:800,N:'仅限“就业培训”',productName:'伯小乐-B2'},
+    ]},
+    {name:"定制/框架季度",base:{C:200,D:66,E:100,F:1300,G:1780,H:1400,skuC:'58_00009',skuD:'58_00002',skuE:'58_00011',skuF:'58_00007',skuG:'58_00013',skuH:'58_00014'},packages:[
+      {name:'伯小乐-季度版',dur:92,C:1,D:30,E:100,J:2300,L:'无',M:2300,N:'全职（除就业培训）',productName:'伯小乐-G1'},
+      {name:'伯小乐-门店3.0季度',dur:92,C:1,D:3,E:60,J:500,L:'无',M:500,N:'全职（除就业培训）',productName:'伯小乐-G2'},
+    ]},
+    {name:"定制/框架—美团特供",base:{C:500,D:66,E:100,F:2400,G:1780,H:1400,skuC:'58_00009',skuD:'58_00002',skuE:'58_00011',skuF:'58_00015',skuG:'58_00013',skuH:'58_00014'},packages:[
+      {name:'伯小乐-3.0季度职位版-美团特供',dur:365,C:1,D:30,E:100,J:1800,L:'有',M:3000,N:'全职（除就业培训）',productName:'伯小乐-G'},
+    ]},
+    {name:"定制/框架年度（容器）",base:{C:500,D:560,E:300,F:2400,G:1780,H:1400,skuC:'58_00009',skuD:'58_00018',skuE:'58_00011',skuF:'58_00015',skuG:'58_00013',skuH:'58_00014'},packages:[
+      {name:'伯小乐-plusC',dur:365,C:1,D:5,E:100,F:1,J:6000,L:'无',M:0,N:'全职（除就业培训）',productName:'伯小乐-plusC'},
+      {name:'伯小乐-plusD',dur:365,C:1,D:5,E:100,J:3600,L:'无',M:0,N:'全职（除就业培训）',productName:'伯小乐-plusD'},
+    ]},
+  ]
+};
+}
+
+// ==================== ZHIXIAOLE DATA (from V1.2.xlsx) ====================
+function getZhixiaoleData(){ return {
+  sections: [
+    {name:"套餐年度——本地",base:{C:500,D:100,E:300,F:2400,G:1780,H:1400,skuC:'58_00009',skuD:'58_00010',skuE:'58_00011',skuF:'58_00016',skuG:'58_00013',skuH:'58_00014'},packages:[
+      {name:'职小乐-本地-单人',dur:365,C:1,D:8,E:100,J:1600,L:'有',M:2700,N:'全职（除就业培训）',productName:'职小乐-A1'},
+    ]},
+    {name:"套餐年度——全国",base:{C:500,D:125,E:300,F:2400,G:1780,H:1400,skuC:'58_00009',skuD:'58_00017',skuE:'58_00011',skuF:'58_00016',skuG:'58_00013',skuH:'58_00014'},packages:[
+      {name:'职小乐-全国-单人',dur:365,C:1,D:8,E:100,J:1800,L:'有',M:3000,N:'全职（除就业培训）',productName:'职小乐-A'},
+    ]},
+    {name:"定制/框架年度",base:{C:500,D:125,E:300,F:2400,G:1780,H:1400,skuC:'58_00009',skuD:'58_00017',skuE:'58_00011',skuF:'58_00016',skuG:'58_00013',skuH:'58_00014'},packages:[
+      {name:'职小乐-标准版',dur:365,C:1,D:8,E:100,J:1800,L:'有',M:3000,N:'全职（除就业培训）',productName:'职小乐-A'},
+      {name:'职小乐-B-已下线',dur:365,C:1,D:0,E:100,J:800,L:'无',M:800,N:'全职（除就业培训）',productName:'职小乐-B'},
+    ]},
+    {name:"定制/框架季度",base:{C:200,D:66,E:100,F:1300,G:1780,H:1400,skuC:'58_00001',skuD:'58_00002',skuE:'58_00003',skuF:'58_00008',skuG:'58_00013',skuH:'58_00014'},packages:[
+      {name:'职小乐-季度版',dur:92,C:1,D:30,E:100,F:1,J:3600,L:'无',M:3600,N:'仅限“普工技工、生产制造、司机物流、安保消防”可用',productName:'职小乐-G1'},
+    ]},
+    {name:"定制/框架季度——特批",base:{C:500,D:66,E:100,F:2400,G:1780,H:1400,skuC:'58_00009',skuD:'58_00002',skuE:'58_00003',skuF:'58_00016',skuG:'58_00013',skuH:'58_00014'},packages:[
+      {name:'职小乐-3.0季度职位版',dur:365,C:1,D:30,E:100,J:1800,L:'有',M:3000,N:'全职（除就业培训）',productName:'职小乐-G'},
+    ]},
+    {name:"定制/框架（容器）-季度",base:{C:200,D:388,E:100,F:1300,G:1780,H:1400,skuC:'58_00001',skuD:'58_00020',skuE:'58_00003',skuF:'58_00008',skuG:'58_00013',skuH:'58_00014'},packages:[
+      {name:'职小乐-plusG-行业限类',dur:92,C:1,D:5,E:100,F:1,J:3600,L:'无',M:0,N:'仅限“普工技工、生产制造、司机物流、安保消防”可用',productName:'职小乐-plusG2'},
+      {name:'职小乐-plusG-行业限类',dur:92,C:1,D:5,E:100,F:1,J:2880,L:'有&10+',M:0,N:'仅限“普工技工、生产制造、司机物流、安保消防”可用',productName:'职小乐-plusG2'},
+      {name:'职小乐-plusG-行业限类',dur:92,C:1,D:5,E:100,F:1,J:2300,L:'有&30+',M:0,N:'仅限“普工技工、生产制造、司机物流、安保消防”可用',productName:'职小乐-plusG2'},
+      {name:'职小乐-plusG-行业限类',dur:92,C:1,D:5,E:100,F:1,J:1800,L:'有&100+',M:0,N:'仅限“普工技工、生产制造、司机物流、安保消防”可用',productName:'职小乐-plusG2'},
+    ]},
+    {name:"定制/框架（容器）-年度",base:{C:500,D:440,E:300,F:2400,G:1780,H:1400,skuC:'58_00009',skuD:'58_00019',skuE:'58_00011',skuF:'58_00016',skuG:'58_00013',skuH:'58_00014'},packages:[
+      {name:'职小乐-plusD-行业限类',dur:365,C:1,D:5,E:100,F:1,J:5400,L:'无',M:0,N:'仅限“普工技工、生产制造、司机物流、安保消防”可用',productName:'职小乐-plusD'},
+      {name:'职小乐-plusD-行业限类',dur:365,C:1,D:5,E:100,F:1,J:4800,L:'有&10+',M:0,N:'仅限“普工技工、生产制造、司机物流、安保消防”可用',productName:'职小乐-plusD'},
+      {name:'职小乐-plusD-行业限类',dur:365,C:1,D:5,E:100,F:1,J:4200,L:'有&30+',M:0,N:'仅限“普工技工、生产制造、司机物流、安保消防”可用',productName:'职小乐-plusD'},
+      {name:'职小乐-plusD-行业限类',dur:365,C:1,D:5,E:100,F:1,J:3600,L:'有&100+',M:0,N:'仅限“普工技工、生产制造、司机物流、安保消防”可用',productName:'职小乐-plusD'},
+    ]},
+    {name:"定制/框架（容器）-季度全类",base:{C:200,D:430,E:100,F:1300,G:1780,H:1400,skuC:'58_00001',skuD:'58_00021',skuE:'58_00003',skuF:'',skuG:'58_00013',skuH:'58_00014'},packages:[
+      {name:'职小乐-plusF',dur:92,C:1,D:5,E:100,F:1,J:3800,L:'无',M:0,N:'仅限“普工技工、生产制造、司机物流、安保消防”可用',productName:'职小乐-plusF'},
+      {name:'职小乐-plusF',dur:92,C:1,D:5,E:100,F:1,J:3000,L:'有&10+',M:0,N:'仅限“普工技工、生产制造、司机物流、安保消防”可用',productName:'职小乐-plusF'},
+      {name:'职小乐-plusF',dur:92,C:1,D:5,E:100,F:1,J:2500,L:'有&30+',M:0,N:'仅限“普工技工、生产制造、司机物流、安保消防”可用',productName:'职小乐-plusF'},
+      {name:'职小乐-plusF',dur:92,C:1,D:5,E:100,F:1,J:1800,L:'有&100+',M:0,N:'仅限“普工技工、生产制造、司机物流、安保消防”可用',productName:'职小乐-plusF'},
+    ]},
+    {name:"定制/框架（容器）-年度全类",base:{C:500,D:560,E:300,F:2400,G:1780,H:1400,skuC:'58_00009',skuD:'58_00018',skuE:'58_00011',skuF:'58_00016',skuG:'58_00013',skuH:'58_00014'},packages:[
+      {name:'职小乐-plusE',dur:365,C:1,D:5,E:100,F:1,J:6000,L:'无',M:0,N:'仅限“普工技工、生产制造、司机物流、安保消防”可用',productName:'职小乐-plusE'},
+      {name:'职小乐-plusE',dur:365,C:1,D:5,E:100,F:1,J:5000,L:'有&10+',M:0,N:'仅限“普工技工、生产制造、司机物流、安保消防”可用',productName:'职小乐-plusE'},
+      {name:'职小乐-plusE',dur:365,C:1,D:5,E:100,F:1,J:4400,L:'有&30+',M:0,N:'仅限“普工技工、生产制造、司机物流、安保消防”可用',productName:'职小乐-plusE'},
+      {name:'职小乐-plusE',dur:365,C:1,D:5,E:100,F:1,J:3800,L:'有&100+',M:0,N:'仅限“普工技工、生产制造、司机物流、安保消防”可用',productName:'职小乐-plusE'},
+    ]},
+  ]
+};
+}
+
+// ==================== GANJI DATA (from V1.2.xlsx) ====================
+function getGanjiData(){ return {
+  sections: [
+    {name:"合同类型",base:{C:0,D:50,E:50,F:0,G:0,H:0,skuC:'',skuD:'GJ_00001',skuE:'GJ_00002',skuF:'',skuG:'',skuH:''},packages:[
+      {name:'急招限时超值包（制造业企业维度45天购买1次）',dur:30,C:1,D:2,E:60,J:200,L:'无',M:200,N:'不支持5大类（普工/技工、生产制造、司机/物流、安保消防、家政服务）的岗位发布，需要在线单购，制造业行业范围的营业执照：企业维度45天购买1次',productName:'个人超值权益包'},
+      {name:'急招限时超值包（制造业企业维度45天购买1次）',dur:30,C:1,D:3,E:60,J:200,L:'无',M:200,N:'不支持5大类（普工/技工、生产制造、司机/物流、安保消防、家政服务）的岗位发布，需要在线单购，制造业行业范围的营业执照：企业维度45天购买1次',productName:'个人超值权益包'},
+      {name:'急招限时超值包（制造业企业维度45天购买1次）',dur:30,C:1,D:3,E:60,J:200,L:'无',M:200,N:'不支持5大类（普工/技工、生产制造、司机/物流、安保消防、家政服务）的岗位发布，需要在线单购，制造业行业范围的营业执照：企业维度45天购买1次',productName:'个人超值权益包'},
+      {name:'AI速聘包',dur:30,C:1,D:2,E:60,J:200,L:'无',M:200,N:'不支持5大类（普工/技工、生产制造、司机/物流、安保消防、家政服务）的岗位发布，需要在线单购',productName:'个人超值权益包'},
+      {name:'AI速聘包',dur:30,C:1,D:3,E:60,J:200,L:'无',M:200,N:'不支持5大类（普工/技工、生产制造、司机/物流、安保消防、家政服务）的岗位发布，需要在线单购',productName:'个人超值权益包'},
+      {name:'AI速聘包',dur:30,C:1,D:3,E:60,J:200,L:'无',M:200,N:'不支持5大类（普工/技工、生产制造、司机/物流、安保消防、家政服务）的岗位发布，需要在线单购',productName:'个人超值权益包'},
+    ]},
+    {name:"合同类型",base:{C:0,D:50,E:50,F:0,G:0,H:0,skuC:'',skuD:'GJ_00004',skuE:'GJ_00005',skuF:'',skuG:'',skuH:''},packages:[
+      {name:'伯小乐-本地-单人',dur:365,C:1,D:3,E:200,J:1600,L:'无',M:1600,N:'劲爆职位（容器）不支持5大类（普工/技工、生产制造、司机/物流、安保消防、家政服务）的岗位发布，需要在线单购',productName:'伯小乐（直招版）A2'},
+      {name:'伯小乐-本地-单人',dur:365,C:1,D:3,E:200,J:1600,L:'无',M:1600,N:'劲爆职位（容器）不支持5大类（普工/技工、生产制造、司机/物流、安保消防、家政服务）的岗位发布，需要在线单购',productName:'伯小乐（直招版）A2'},
+    ]},
+    {name:"合同类型",base:{C:0,D:50,E:50,F:0,G:0,H:0,skuC:'',skuD:'GJ_00009',skuE:'GJ_00005',skuF:'',skuG:'',skuH:''},packages:[
+      {name:'伯小乐-全国-单人',dur:365,C:1,D:5,E:200,J:2200,L:'无',M:2200,N:'劲爆职位（容器）不支持5大类（普工/技工、生产制造、司机/物流、安保消防、家政服务）的岗位发布，需要在线单购',productName:'伯小乐（直招版）A'},
+      {name:'伯小乐-全国-单人',dur:365,C:1,D:6,E:200,J:2500,L:'无',M:2500,N:'劲爆职位（容器）不支持5大类（普工/技工、生产制造、司机/物流、安保消防、家政服务）的岗位发布，需要在线单购',productName:'伯小乐（直招版）A1'},
+      {name:'伯小乐-全国-单人',dur:365,C:1,D:6,E:200,J:2500,L:'无',M:2500,N:'劲爆职位（容器）不支持5大类（普工/技工、生产制造、司机/物流、安保消防、家政服务）的岗位发布，需要在线单购',productName:'伯小乐（直招版）A1'},
+      {name:'伯小乐-全国-双人',dur:365,C:2,D:12,E:200,J:2500,L:'无',M:2500,N:'劲爆职位（容器）不支持5大类（普工/技工、生产制造、司机/物流、安保消防、家政服务）的岗位发布，需要在线单购',productName:'伯小乐（直招版）A1'},
+      {name:'伯小乐-全国-三人',dur:365,C:3,D:18,E:200,J:2500,L:'无',M:2500,N:'劲爆职位（容器）不支持5大类（普工/技工、生产制造、司机/物流、安保消防、家政服务）的岗位发布，需要在线单购',productName:'伯小乐（直招版）A1'},
+    ]},
+    {name:"合同类型",base:{C:0,D:50,E:50,F:0,G:0,H:0,skuC:'',skuD:'GJ_00009',skuE:'GJ_00005',skuF:'',skuG:'',skuH:''},packages:[
+      {name:'伯小乐-本地-简历宝年度',dur:365,C:1,D:2,E:20,J:1600,L:'无',M:1600,N:'劲爆职位（容器）不支持5大类（普工/技工、生产制造、司机/物流、安保消防、家政服务）的岗位发布，需要在线单购',productName:'伯小乐（直招版）A3'},
+      {name:'伯小乐-全国-简历宝年度',dur:365,C:1,D:5,E:200,J:2200,L:'无',M:2200,N:'劲爆职位（容器）不支持5大类（普工/技工、生产制造、司机/物流、安保消防、家政服务）的岗位发布，需要在线单购',productName:'伯小乐（直招版）A'},
+      {name:'伯小乐-全国-简历宝年度',dur:365,C:1,D:5,E:200,J:2200,L:'无',M:2200,N:'劲爆职位（容器）不支持5大类（普工/技工、生产制造、司机/物流、安保消防、家政服务）的岗位发布，需要在线单购',productName:'伯小乐（直招版）A'},
+      {name:'伯小乐-全国-简历宝年度',dur:365,C:1,D:6,E:200,J:2500,L:'无',M:2500,N:'劲爆职位（容器）不支持5大类（普工/技工、生产制造、司机/物流、安保消防、家政服务）的岗位发布，需要在线单购',productName:'伯小乐（直招版）A1'},
+    ]},
+    {name:"合同类型",base:{C:0,D:50,E:50,F:0,G:0,H:0,skuC:'',skuD:'GJ_00009',skuE:'GJ_00005',skuF:'',skuG:'',skuH:''},packages:[
+      {name:'伯小乐-全国-行业版',dur:365,C:1,D:5,E:200,J:2200,L:'无',M:2200,N:'主播行业劲爆职位（容器）（1、仅支持发布：“传媒/影视/直播”、“人事/行政/财务”、“运营/客服”、“教育培训”、“美发/美容/保健”；2、其他类目，均需要单独付费发布；3、“就业培训”招生需求，需要单独购买“58招生培训套餐”。）',productName:'伯小乐（直招版）B'},
+      {name:'伯小乐-全国-行业版',dur:365,C:1,D:6,E:200,J:2500,L:'无',M:2500,N:'主播行业劲爆职位（容器）（1、仅支持发布：“传媒/影视/直播”、“人事/行政/财务”、“运营/客服”、“教育培训”、“美发/美容/保健”；2、其他类目，均需要单独付费发布；3、“就业培训”招生需求，需要单独购买“58招生培训套餐”。）',productName:'伯小乐（直招版）B1'},
+      {name:'伯小乐-全国-行业版',dur:365,C:3,D:18,E:200,J:2500,L:'无',M:2500,N:'主播行业劲爆职位（容器）（1、仅支持发布：“传媒/影视/直播”、“人事/行政/财务”、“运营/客服”、“教育培训”、“美发/美容/保健”；2、其他类目，均需要单独付费发布；3、“就业培训”招生需求，需要单独购买“58招生培训套餐”。）',productName:'伯小乐（直招版）B1'},
+    ]},
+    {name:"合同类型",base:{C:0,D:50,E:50,F:0,G:0,H:0,skuC:'',skuD:'GJ_00009',skuE:'GJ_00005',skuF:'',skuG:'',skuH:''},packages:[
+      {name:'伯小乐（直招版）-升级后-超级置顶不限类',dur:365,C:1,D:5,E:200,F:1,J:3000,L:'无',M:3000,N:'劲爆职位（容器）不支持5大类（普工/技工、生产制造、司机/物流、安保消防、家政服务）的岗位发布，需要在线单购；超级置顶不限发布类目',productName:'伯小乐（直招版）plusA'},
+    ]},
+  ]
+};
+}
+// ==================== HELPERS ====================
+function findSku(skuNo){ return skuData.find(s=>s.skuNo===skuNo); }
+function getSkuName(skuNo){ const s=findSku(skuNo); return s?s.skuFullName:'—'; }
+function getSkuPrice(skuNo){ const s=findSku(skuNo); return s?s.listPrice:0; }
+function getSkuDays(skuNo){ const s=findSku(skuNo); return s?s.days:0; }
+function deriveLabels(b){ return {skuC:getSkuName(b.skuC)||'—',skuD:getSkuName(b.skuD)||'—',skuE:getSkuName(b.skuE)||'—',skuF:getSkuName(b.skuF)||'—',skuG:getSkuName(b.skuG)||'—',skuH:getSkuName(b.skuH)||'—'}; }
+
+// ==================== STATE ====================
+let currentMode='58', originalData=null, currentData=null, modificationLog=[], lastCompareData=null;
+
+function ensureSkuFields(s){
+  ['C','D','E','F','G','H'].forEach(f=>{ if(!s.base['sku'+f]) s.base['sku'+f]=''; });
+}
+
+function ensureProductNames(){
+  const prefix = currentMode==='zhixiaole'?'职小乐':'伯小乐';
+  const names=new Set();
+  const dupCount={};
+  // First pass: assign default product names only for packages WITHOUT existing productName
+  currentData.sections.forEach(s=>{
+    s.packages.forEach(p=>{
+      if(!p.productName||p.productName.trim()===''){
+        let baseName=prefix+'·'+p.name;
+        if(dupCount[baseName]){
+          dupCount[baseName]++;
+          // Try with number suffix
+          let candidate=baseName+'-'+dupCount[baseName];
+          while(names.has(candidate)){
+            dupCount[baseName]++;
+            candidate=baseName+'-'+dupCount[baseName];
+          }
+          p.productName=candidate;
+          names.add(candidate);
+        } else {
+          dupCount[baseName]=1;
+          // Check if already existing in another package
+          if(names.has(baseName)){
+            let i=2;
+            while(names.has(baseName+'-'+i))i++;
+            p.productName=baseName+'-'+i;
+            dupCount[baseName]=i;
+            names.add(baseName+'-'+i);
+          } else {
+            p.productName=baseName;
+            names.add(baseName);
+          }
+        }
+      } else {
+        // V1.2 data already has productName — keep as-is, just register for uniqueness tracking
+        names.add(p.productName);
+      }
+    });
+  });
+}
+
+function init(){
+  // 先尝试恢复保存的版本
+  if(initVersionSystem()) return;
+  // 没有保存的版本，使用默认数据
+  currentData = getDataByMode(currentMode);
+  currentData.sections.forEach(ensureSkuFields);
+  ensureProductNames();
+  originalData=deepClone(currentData);
+  renderAll();
+}
+function getDataByMode(mode){
+  if(mode==='58') return get58Data();
+  if(mode==='zhixiaole') return getZhixiaoleData();
+  return getGanjiData();
+}
+function getModeLabel(mode){
+  if(mode==='58') return '58同城·伯小乐';
+  if(mode==='zhixiaole') return '58同城·职小乐';
+  return '赶集直招·伯小乐';
+}
+function switchMode(mode){
+  currentMode=mode;
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  const idx = mode==='58'?1:(mode==='zhixiaole'?2:3);
+  document.querySelector('.tab-btn:nth-child('+idx+')').classList.add('active');
+  document.getElementById('comparisonPanel').style.display='none';
+  // 检查该模式是否有保存的版本
+  const latest=loadLatestVersion(mode);
+  if(latest){
+    currentData=latest.data;
+    if(latest.skuData) skuData=latest.skuData;
+  }else{
+    currentData = getDataByMode(mode);
+  }
+  currentData.sections.forEach(ensureSkuFields);
+  ensureProductNames();
+  originalData=deepClone(currentData); modificationLog=[]; lastCompareData=null;
+  renderAll(); updateVersionBadge();
+  showToast('已切换到'+getModeLabel(mode)+'模式');
+}
+
+// ==================== RENDER ====================
+function renderAll(){
+  ensureProductNames();
+  const c=document.getElementById('mainContent');
+  let h='';
+  currentData.sections.forEach((s,si)=>{
+    const L=deriveLabels(s.base);
+    h+=`<div class="section"><div class="section-header" onclick="toggleSection(this)"><div style="display:flex;align-items:center;gap:6px;"><span class="section-arrow">▾</span><h3>${s.name}</h3></div><span class="badge">${s.packages.length} 个组合包</span></div><div class="section-body">${renderTable(s,si,L)}</div></div>`;
+  });
+  c.innerHTML=h;
+}
+
+function renderTable(s,si,L){
+  const b=s.base;
+  const fLabel = currentMode==='zhixiaole'?'代招公司':'超级置顶/代招公司';
+  let h=`<table class="pricing-table"><thead><tr><th rowspan="2" class="col-name">组合包名称</th><th rowspan="2" class="col-pname">伯小乐/<br>职小乐商品名称</th><th rowspan="2" class="col-dur">时长</th>
+<th class="col-base">C：权益包数量<br><span class="sku-name">${L.skuC}</span></th>
+<th class="col-base">D：劲爆职位<br><span class="sku-name">${L.skuD}</span></th>
+<th class="col-base">E：主动开聊<br><span class="sku-name">${L.skuE}</span></th>
+<th class="col-base">F：${fLabel}<br><span class="sku-name">${L.skuF}</span></th>
+<th class="col-base">G：电话沟通<br><span class="sku-name">${L.skuG}</span></th>
+<th class="col-base">H：极速聊-访客代聊标准版<br><span class="sku-name">${L.skuH}</span></th>
+<th class="col-calc">I：总刊例价</th><th class="col-calc">J：售价</th><th class="col-calc">K：折扣</th><th class="col-act">L：换购</th><th class="col-calc">M：刊例价</th><th class="col-pub-limit">N：发布限制</th><th style="width:24px;"></th></tr>
+<tr><th class="col-base" style="font-weight:400;color:#333;">¥${(b.C||0).toLocaleString()}</th>
+<th class="col-base" style="font-weight:400;color:#333;">¥${(b.D||0).toLocaleString()}</th>
+<th class="col-base" style="font-weight:400;color:#333;">¥${(b.E||0).toLocaleString()}</th>
+<th class="col-base" style="font-weight:400;color:#333;">¥${(b.F||0).toLocaleString()}</th>
+<th class="col-base" style="font-weight:400;color:#333;">¥${(b.G||0).toLocaleString()}</th>
+<th class="col-base" style="font-weight:400;color:#333;">¥${(b.H||0).toLocaleString()}</th>
+<th class="col-calc" style="font-size:8px;color:#999;">C×基+D×基+…</th>
+<th class="col-calc" style="font-size:8px;color:#999;">ROUNDUP(I/C,-2)</th>
+<th class="col-calc" style="font-size:8px;color:#999;">(J×C)/I</th>
+<th class="col-act" style="font-size:8px;color:#999;">有/无</th>
+<th class="col-calc" style="font-size:8px;color:#999;">V1.2刊例价</th>
+<th class="col-pub-limit" style="font-size:8px;color:#999;">V1.2 O列</th>
+<th style="width:24px;"></th></tr></thead><tbody>`;
+
+  s.packages.forEach((p,pi)=>{
+    const I=calcTotal(p.C,p.D,p.E,p.F||0,p.G||0,p.H||0,b.C,b.D,b.E,b.F,b.G,b.H);
+    const J=(p.J!==null&&p.J!==undefined)?p.J:calcSell(I,p.C);
+    const K=calcDisc(J,p.C,I);
+    // M: use V1.2 exchange_price if available, otherwise calculate
+    const M=(p.M!==null&&p.M!==undefined)?p.M:calcAct(J,p.L);
+    const N=p.N||'';
+    let dc='good'; if(K>1.1)dc='bad'; else if(K>0.95||K<0.8)dc='warn';
+
+    // Read-only display row with edit toggle
+    const pid=`${si}_${pi}`;
+    h+=`<tr class="data-row${(p.isNew||p.isModified)?' modified':''}" id="pkg_${pid}">
+<td class="name" title="${p.name}">${p.name}</td>
+<td><span class="ro-val ro-pname">${p.productName||''}</span></td>
+<td><span class="ro-val">${p.dur}</span></td>
+<td><span class="ro-val">${p.C}</span></td>
+<td><span class="ro-val">${p.D}</span></td>
+<td><span class="ro-val">${p.E}</span></td>
+<td><span class="ro-val">${p.F||0}</span></td>
+<td><span class="ro-val">${p.G||0}</span></td>
+<td><span class="ro-val">${p.H||0}</span></td>
+<td class="calc-price">¥${I.toLocaleString()}</td>
+<td><span class="ro-val ro-price">¥${J.toLocaleString()}</span></td>
+<td><span class="calc-discount ${dc}">${(K*100).toFixed(1)}%</span></td>
+<td class="calc-act" style="text-align:center;font-weight:600;">${p.L||'无'}</td>
+<td class="calc-act">¥${M.toLocaleString()}</td>
+<td class="col-pub-limit" title="${N.replace(/"/g,'&quot;')}" style="font-size:9px;color:#666;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:left;padding:0 4px;">${N}</td>
+<td style="white-space:nowrap;"><button class="row-edit-btn" onclick="toggleRowEdit(${si},${pi})" title="编辑此行">✎</button><button class="pkg-del-btn" onclick="delPkg(${si},${pi})" title="删除此组合包">×</button></td></tr>`;
+
+    h+=`<tr class="formula-row"><td colspan="3">💡 计算过程</td>
+<td colspan="6">I = ${p.C}×${b.C} + ${p.D}×${b.D} + ${p.C}×${b.E} + ${p.F||0}×${b.F} + ${p.G||0}×${b.G} + ${p.H||0}×${b.H} = <b>${I.toLocaleString()}</b></td>
+<td>J = ROUNDUP(${I}/${p.C},-2) = <b>${J.toLocaleString()}</b></td>
+<td>K = ${J}×${p.C}/${I} = <b>${(K*100).toFixed(1)}%</b></td><td colspan="2">${p.L}（V1.2数据，不可编辑）</td><td>${N}</td><td></td></tr>`;
+  });
+  h+=`</tbody></table>`;
+
+  // Add package button
+  h+=`<div class="add-pkg-bar"><button class="btn btn-success btn-sm" onclick="showNewPkgForm(${si})" id="addPkgBtn_${si}" style="display:${(!document.getElementById('newPkgForm_'+si))?'inline-flex':'none'};">+ 新增组合包</button></div>`;
+
+  return h;
+}
+
+function toggleSection(header){ const body=header.nextElementSibling; body.classList.toggle('collapsed'); header.querySelector('.section-arrow').textContent=body.classList.contains('collapsed')?'▸':'▾'; }
+
+// ==================== UPDATE / ROW EDIT ====================
+function up(si,pi,field,val){
+  const p=currentData.sections[si].packages[pi]; const old=p[field];
+  p[field]=(field==='L'||field==='productName'||field==='N')?val:(parseFloat(val)||0);
+  if(!p.isNew) p.isModified=true;
+  const fn={dur:'售卖时间',productName:'商品名称',C:'伯小乐权益包',D:'劲爆职位',E:'主动开聊',F:'超级置顶',G:'电话沟通',H:'人才雷达',J:'套餐售价',L:'换购',N:'发布限制'};
+  modificationLog.push({time:new Date().toLocaleTimeString(),msg:`[${currentData.sections[si].name}] "${p.name}" ${fn[field]||field}: ${old} → ${val}`});
+  renderAll();
+}
+
+// Toggle a data row between read-only display and inline edit mode
+function toggleRowEdit(si,pi){
+  const row=document.getElementById('pkg_'+si+'_'+pi);
+  if(!row) return;
+  const p=currentData.sections[si].packages[pi];
+  const b=currentData.sections[si].base;
+  // If already in edit mode, cancel (re-render)
+  if(row.classList.contains('row-editing')){
+    renderAll(); return;
+  }
+  // Switch to edit mode
+  row.classList.add('row-editing');
+  // Replace cells with inputs (cols index 1-9, 11)
+  const cells=row.querySelectorAll('td');
+  // col 1: productName
+  cells[1].innerHTML=`<input type="text" value="${(p.productName||'').replace(/"/g,'&quot;')}" class="row-edit-input" style="width:110px;text-align:left;padding-left:4px;" id="re_pname_${si}_${pi}">`;
+  // col 2: dur
+  cells[2].innerHTML=`<input type="number" value="${p.dur}" class="row-edit-input" id="re_dur_${si}_${pi}">`;
+  // col 3-9: C,D,E,F,G,H
+  ['C','D','E','F','G','H'].forEach((f,i)=>{
+    cells[3+i].innerHTML=`<input type="number" value="${p[f]||0}" class="row-edit-input" id="re_${f}_${si}_${pi}">`;
+  });
+  // col 10: J price
+  const J=(p.J!==null&&p.J!==undefined)?p.J:calcSell(calcTotal(p.C,p.D,p.E,p.F||0,p.G||0,p.H||0,b.C,b.D,b.E,b.F,b.G,b.H),p.C);
+  cells[10].innerHTML=`<input type="number" value="${J}" class="row-edit-input" style="font-weight:700;color:#1677ff;width:72px;" id="re_J_${si}_${pi}">`;
+  // Replace edit button with save/cancel
+  cells[15].innerHTML=`<button class="row-save-btn" onclick="saveRowEdit(${si},${pi})" title="保存">✓</button><button class="row-cancel-btn" onclick="renderAll()" title="取消">✗</button>`;
+}
+
+function saveRowEdit(si,pi){
+  const p=currentData.sections[si].packages[pi];
+  const fields=['productName','dur','C','D','E','F','G','H','J'];
+  fields.forEach(f=>{
+    const el=document.getElementById('re_'+f+'_'+si+'_'+pi);
+    if(!el) return;
+    const val=f==='productName'?el.value.trim():parseFloat(el.value)||0;
+    const old=p[f];
+    if(f==='productName') p[f]=val;
+    else p[f]=val;
+    const fn={dur:'售卖时间',productName:'商品名称',C:'伯小乐权益包',D:'劲爆职位',E:'主动开聊',F:'超级置顶',G:'电话沟通',H:'人才雷达',J:'套餐售价'};
+    const changed=(f==='productName')?(old!==val):(old!==val);
+    if(changed){
+      if(!p.isNew) p.isModified=true;
+      modificationLog.push({time:new Date().toLocaleTimeString(),msg:`[${currentData.sections[si].name}] "${p.name}" ${fn[f]||f}: ${old} → ${val}`});
+    }
+  });
+  renderAll();
+}
+
+// ==================== ADD / DELETE PACKAGE ====================
+function showNewPkgForm(si){
+  const s=currentData.sections[si];
+  // Toggle off
+  const existing=document.getElementById('newPkgForm_'+si);
+  if(existing){ existing.remove(); document.getElementById('addPkgBtn_'+si).style.display='inline-flex'; return; }
+  // Build inline form as a table
+  const b=s.base;
+  const form=`<table class="new-pkg-form" id="newPkgForm_${si}" style="width:100%;table-layout:auto;"><tbody>
+<tr><td style="text-align:left;padding-left:8px;font-weight:600;color:var(--primary);font-size:10px;" colspan="16">▸ 新增组合包（填写后点确认）</td></tr><tr>
+<td><input type="text" id="np_name_${si}" class="name-input" placeholder="组合包名称"></td>
+<td><input type="text" id="np_pname_${si}" class="name-input" placeholder="对客商品名"></td>
+<td><input type="number" id="np_dur_${si}" class="dur-input" value="365" placeholder="时长"></td>
+<td><input type="number" id="np_C_${si}" class="qty-input" value="1" placeholder="C"></td>
+<td><input type="number" id="np_D_${si}" class="qty-input" value="0" placeholder="D"></td>
+<td><input type="number" id="np_E_${si}" class="qty-input" value="0" placeholder="E"></td>
+<td><input type="number" id="np_F_${si}" class="qty-input" value="0" placeholder="F"></td>
+<td><input type="number" id="np_G_${si}" class="qty-input" value="0" placeholder="G"></td>
+<td><input type="number" id="np_H_${si}" class="qty-input" value="0" placeholder="H"></td>
+<td style="color:#999;font-size:9px;">自动</td>
+<td><input type="number" id="np_J_${si}" class="price-input" placeholder="售价(留空自动)"></td>
+<td style="color:#999;font-size:9px;">自动</td>
+<td><select id="np_L_${si}" style="padding:3px;border:1px solid #91caff;border-radius:3px;font-size:10px;"><option value="有">有</option><option value="无">无</option></select></td>
+<td><input type="number" id="np_M_${si}" class="price-input" placeholder="刊例价" style="width:70px;"></td>
+<td><input type="text" id="np_N_${si}" class="name-input" placeholder="发布限制"></td>
+<td style="display:flex;gap:3px;"><button class="btn btn-success btn-xs" onclick="addNewPkg(${si})">✓ 确认</button><button class="btn btn-outline btn-xs" onclick="cancelNewPkg(${si})">✗</button></td>
+</tr></tbody></table>`;
+  document.getElementById('addPkgBtn_'+si).style.display='none';
+  // Insert after the table, before add-pkg-bar
+  const bar=document.getElementById('addPkgBtn_'+si).parentElement;
+  bar.insertAdjacentHTML('beforebegin',form);
+}
+function addNewPkg(si){
+  const s=currentData.sections[si];
+  const name=document.getElementById('np_name_'+si).value.trim()||'新组合包';
+  const pname=document.getElementById('np_pname_'+si).value.trim()||'';
+  const dur=parseInt(document.getElementById('np_dur_'+si).value)||365;
+  const C=parseInt(document.getElementById('np_C_'+si).value)||1;
+  const D=parseInt(document.getElementById('np_D_'+si).value)||0;
+  const E=parseInt(document.getElementById('np_E_'+si).value)||0;
+  const F=parseInt(document.getElementById('np_F_'+si).value)||0;
+  const G=parseInt(document.getElementById('np_G_'+si).value)||0;
+  const H=parseInt(document.getElementById('np_H_'+si).value)||0;
+  const Jraw=document.getElementById('np_J_'+si).value;
+  const J=(Jraw&&Jraw.trim()!=='')?parseInt(Jraw):null;
+  const L=document.getElementById('np_L_'+si).value||'无';
+  const Mraw=document.getElementById('np_M_'+si).value;
+  const M=(Mraw&&Mraw.trim()!=='')?parseInt(Mraw):null;
+  const N=document.getElementById('np_N_'+si).value.trim()||'';
+  s.packages.push({name,productName:pname,dur,C,D,E,F,G,H,J,L,M,N, isNew:true});
+  modificationLog.push({time:new Date().toLocaleTimeString(),msg:`[${s.name}] 新增组合包 "${name}" (时长${dur}天, C${C} D${D} E${E} F${F} G${G} H${H})`});
+  cancelNewPkg(si);
+  renderAll();
+  showToast(`已新增组合包「${name}」`);
+}
+function cancelNewPkg(si){
+  const f=document.getElementById('newPkgForm_'+si); if(f)f.remove();
+  const b=document.getElementById('addPkgBtn_'+si); if(b)b.style.display='inline-flex';
+}
+function delPkg(si,pi){
+  const p=currentData.sections[si].packages[pi];
+  const sname=currentData.sections[si].name;
+  if(!confirm(`确定删除［${sname}］中的"${p.name}"吗？\n（此操作不可恢复，建议先导出备份）`)) return;
+  modificationLog.push({time:new Date().toLocaleTimeString(),msg:`[${sname}] 删除组合包 "${p.name}"`});
+  currentData.sections[si].packages.splice(pi,1);
+  renderAll();
+  showToast(`已删除「${p.name}」`);
+}
+
+// ==================== SKU MODAL ====================
+function showSkuModal(){ renderSkuTable(); document.getElementById('skuModal').style.display='flex'; }
+function renderSkuTable(){
+  const t=document.getElementById('skuTableBody');
+  // Read selected types from custom multi-select checkboxes
+  const selectedTypes=getSelectedSkuTypes();
+  // Populate filter options
+  const types=[...new Set(skuData.map(s=>s.productType).filter(Boolean))].sort();
+  populateSkuTypeOptions(types, selectedTypes);
+  updateSkuFilterLabel(selectedTypes, types.length);
+  // Apply filter
+  const rows=(selectedTypes.length===0 || selectedTypes.length===types.length)
+    ? skuData.map((s,i)=>({s,i}))
+    : skuData.map((s,i)=>({s,i})).filter(o=>selectedTypes.includes(o.s.productType));
+  document.getElementById('skuCount').textContent=skuData.filter(s=>s.valid===1).length;
+  const esc=v=>String(v||'').replace(/"/g,'&quot;');
+  t.innerHTML=rows.map(({s,i})=>{
+    const isNew=s._isNew===true;
+    const roTd=(id,val,sty)=>`<span id="${id}" style="font-size:11px;line-height:1.5;${sty||''}">${esc(val)}</span>`;
+    const inTd=(id,val,typ,sty)=>`<input type="${typ||'text'}" value="${esc(val)}" id="${id}" class="edit-mode" style="${sty||''}">`;
+    return `<tr class="${s.valid===0?'sku-invalid':''}" id="skuRow_${i}">
+<td>${isNew?inTd('skuNo_'+i,s.skuNo):roTd('skuNo_'+i,s.skuNo)}</td>
+<td>${isNew?inTd('skuName_'+i,s.skuFullName,'text','text-align:left;'):roTd('skuName_'+i,s.skuFullName,'text-align:left;word-break:break-all;')}</td>
+<td>${isNew?inTd('skuPType_'+i,s.productType,'text','text-align:left;'):roTd('skuPType_'+i,s.productType,'text-align:left;font-weight:500;')}</td>
+<td>${isNew?inTd('skuDays_'+i,s.days,'number'):roTd('skuDays_'+i,s.days+'天')}</td>
+<td><input type="number" value="${s.listPrice}" id="skuPrice_${i}" class="edit-mode" style="font-weight:600;color:#1677ff;"></td>
+<td>${isNew?`<select id="skuValid_${i}" class="edit-mode" style="width:100%;padding:3px 4px;border:1px solid var(--border);border-radius:3px;font-size:10px;"><option value="1" ${s.valid===1?'selected':''}>有效</option><option value="0" ${s.valid===0?'selected':''}>无效</option></select>`:roTd('skuValid_'+i,s.valid===1?'有效':'无效',s.valid===1?'color:#52c41a;font-weight:600;':'color:#ccc;')}</td>
+<td><button class="btn btn-danger btn-xs" onclick="delSku(${i})">删除</button></td></tr>`;
+  }).join('');
+}
+function addSkuRow(){
+  const mx=skuData.filter(s=>s.skuNo.startsWith('58_')).reduce((m,s)=>{ const n=parseInt(s.skuNo.replace('58_',''));return n>m?n:m;},0);
+  skuData.push({skuNo:`58_${String(mx+1).padStart(5,'0')}`,skuFullName:'新SKU',productType:'新品类',days:365,listPrice:0,valid:1,_isNew:true});
+  renderSkuTable(); showToast('已添加新SKU行');
+}
+function delSku(i){ if(!confirm(`删除SKU "${skuData[i].skuFullName}"？`))return; skuData.splice(i,1); renderSkuTable(); }
+
+// ==================== SKU 产品类型多选筛选器 ====================
+function getSelectedSkuTypes(){
+  const cbs=document.querySelectorAll('#skuTypeOptions input[type="checkbox"]');
+  const sel=[]; cbs.forEach(cb=>{if(cb.checked)sel.push(cb.value);}); return sel;
+}
+function populateSkuTypeOptions(types, selectedTypes){
+  const container=document.getElementById('skuTypeOptions');
+  if(!container) return;
+  const searchVal=document.getElementById('skuTypeSearch')?.value.toLowerCase()||'';
+  const esc=v=>String(v||'').replace(/"/g,'&quot;').replace(/</g,'&lt;');
+  const filtered=searchVal?types.filter(t=>t.toLowerCase().includes(searchVal)):types;
+  container.innerHTML=filtered.map(ty=>{
+    const checked=selectedTypes.length===0||selectedTypes.includes(ty)?' checked':'';
+    return `<label style="display:flex;align-items:center;gap:6px;padding:3px 4px;cursor:pointer;font-size:11px;border-radius:2px;margin:1px 0;" onmouseenter="this.style.background='#f5f5f5'" onmouseleave="this.style.background='transparent'">
+      <input type="checkbox" value="${esc(ty)}"${checked} onchange="renderSkuTable()" style="margin:0;">
+      <span>${esc(ty)}</span>
+    </label>`;
+  }).join('');
+  if(filtered.length===0) container.innerHTML='<div style="font-size:11px;color:#999;padding:8px;text-align:center;">无匹配结果</div>';
+}
+function updateSkuFilterLabel(selectedTypes, totalTypes){
+  const label=document.getElementById('skuTypeFilterLabel');
+  if(!label) return;
+  if(selectedTypes.length===0||selectedTypes.length===totalTypes) label.textContent='全部产品类型';
+  else label.textContent=`已选 ${selectedTypes.length} / ${totalTypes} 类`;
+}
+function toggleSkuFilterDropdown(e){
+  e.stopPropagation();
+  const dd=document.getElementById('skuTypeDropdown');
+  const isOpen=dd.style.display==='block';
+  dd.style.display=isOpen?'none':'block';
+  if(!isOpen){
+    const srch=document.getElementById('skuTypeSearch');
+    if(srch){srch.value='';srch.focus();}
+    filterSkuTypeOptions();
+  }
+}
+function filterSkuTypeOptions(){
+  const types=[...new Set(skuData.map(s=>s.productType).filter(Boolean))].sort();
+  const selected=getSelectedSkuTypes();
+  populateSkuTypeOptions(types, selected);
+}
+function selectAllSkuTypes(){
+  document.querySelectorAll('#skuTypeOptions input[type="checkbox"]').forEach(cb=>cb.checked=true);
+  renderSkuTable();
+}
+function deselectAllSkuTypes(){
+  document.querySelectorAll('#skuTypeOptions input[type="checkbox"]').forEach(cb=>cb.checked=false);
+  renderSkuTable();
+}
+// Close dropdown when clicking outside
+document.addEventListener('click',function(e){
+  const dd=document.getElementById('skuTypeDropdown');
+  const wrap=document.getElementById('skuTypeFilterWrap');
+  if(dd&&wrap&&!wrap.contains(e.target)) dd.style.display='none';
+  const dd2=document.getElementById('disclosureFilterDropdown');
+  const wrap2=document.getElementById('disclosureFilterWrap');
+  if(dd2&&wrap2&&!wrap2.contains(e.target)) dd2.style.display='none';
+});
+function saveAllSku(){
+  let nd=[]; for(let i=0;i<skuData.length;i++){
+    const s=skuData[i]; const isNew=s._isNew===true;
+    const priceEl=document.getElementById(`skuPrice_${i}`);
+    const newPrice=priceEl?(parseInt(priceEl.value)||0):s.listPrice;
+    if(isNew){
+      const noEl=document.getElementById(`skuNo_${i}`);
+      if(!noEl){nd.push(s);continue;}
+      nd.push({skuNo:noEl.value.trim(),skuFullName:document.getElementById(`skuName_${i}`).value.trim(),productType:document.getElementById(`skuPType_${i}`).value.trim(),days:parseInt(document.getElementById(`skuDays_${i}`).value)||0,listPrice:newPrice,valid:parseInt(document.getElementById(`skuValid_${i}`).value)});
+    } else {
+      nd.push({skuNo:s.skuNo,skuFullName:s.skuFullName,productType:s.productType,days:s.days,listPrice:newPrice,valid:s.valid});
+    }
+  }
+  skuData=nd;
+  currentData.sections.forEach(s=>{['C','D','E','F','G','H'].forEach(f=>{ const sn=s.base['sku'+f]; if(sn){ const p=getSkuPrice(sn); if(p>0)s.base[f]=p; }}); });
+  closeModal('skuModal'); renderAll(); showToast(`SKU已保存（${skuData.length}条）`);
+}
+
+function exportSkuCsv(){
+  let csv='SKU编号,SKU全称,产品类型,有效期(天),刊例价(元)\n';
+  skuData.forEach(s=>{
+    const name=(s.skuFullName||'').replace(/"/g,'""');
+    const type=(s.productType||'').replace(/"/g,'""');
+    csv+=`"${s.skuNo||''}","${name}","${type}",${s.days||0},${s.listPrice||0}\n`;
+  });
+  const blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url; a.download='单品刊例价_SKU_'+new Date().toISOString().slice(0,10)+'.csv';
+  a.click(); URL.revokeObjectURL(url); showToast('SKU刊例价导出成功！');
+}
+
+// ==================== SECTION MANAGER ====================
+function buildSkuOpts(cur){
+  let o='<option value="">— 不选取 —</option>';
+  skuData.forEach(s=>{ const sel=(s.skuNo===cur)?'selected':''; o+=`<option value="${s.skuNo}" ${sel}>[${s.skuNo}] ${s.skuFullName} - ¥${s.listPrice}</option>`; });
+  return o;
+}
+function showSectionManager(){
+  const c=document.getElementById('sectionManagerContent');
+  c.innerHTML=currentData.sections.map((s,si)=>{
+    const b=s.base; const L=deriveLabels(b);
+    return `<div class="sku-select-card"><div class="section-name-row"><input type="text" id="sm_name_${si}" value="${s.name.replace(/"/g,'&quot;')}" style="font-weight:700;font-size:13px;flex:1;"><button class="btn btn-danger btn-xs" onclick="delSectionInManager(${si})">删除套餐区</button></div>
+<div class="field-grid">
+<div class="form-group"><label>C：伯小乐权益包</label><select id="sm_${si}_C" onchange="onSmSel(${si},'C')">${buildSkuOpts(b.skuC||'')}</select><div class="selected-sku">当前：${L.skuC} | ¥${b.C.toLocaleString()}</div></div>
+<div class="form-group"><label>D：劲爆职位</label><select id="sm_${si}_D" onchange="onSmSel(${si},'D')">${buildSkuOpts(b.skuD||'')}</select><div class="selected-sku">当前：${L.skuD} | ¥${b.D.toLocaleString()}</div></div>
+<div class="form-group"><label>E：主动开聊</label><select id="sm_${si}_E" onchange="onSmSel(${si},'E')">${buildSkuOpts(b.skuE||'')}</select><div class="selected-sku">当前：${L.skuE} | ¥${b.E.toLocaleString()}</div></div>
+<div class="form-group"><label>F：超级置顶</label><select id="sm_${si}_F" onchange="onSmSel(${si},'F')">${buildSkuOpts(b.skuF||'')}</select><div class="selected-sku">当前：${L.skuF} | ¥${b.F.toLocaleString()}</div></div>
+<div class="form-group"><label>G：电话沟通</label><select id="sm_${si}_G" onchange="onSmSel(${si},'G')">${buildSkuOpts(b.skuG||'')}</select><div class="selected-sku">当前：${L.skuG} | ¥${b.G.toLocaleString()}</div></div>
+<div class="form-group"><label>H：人才雷达</label><select id="sm_${si}_H" onchange="onSmSel(${si},'H')">${buildSkuOpts(b.skuH||'')}</select><div class="selected-sku">当前：${L.skuH} | ¥${b.H.toLocaleString()}</div></div>
+</div></div>`;
+  }).join('');
+  document.getElementById('sectionManagerModal').style.display='flex';
+}
+function onSmSel(si,f){ const v=document.getElementById(`sm_${si}_${f}`).value; if(v){ const sku=findSku(v); if(sku) showToast(`已选：${sku.skuFullName} — ¥${sku.listPrice.toLocaleString()}`); } }
+function addNewSectionInManager(){
+  currentData.sections.push({name:'新套餐区',base:{C:500,D:220,E:300,F:2400,G:1780,H:1400,skuC:'',skuD:'',skuE:'',skuF:'',skuG:'',skuH:''},packages:[]});
+  showSectionManager(); showToast('已添加新套餐区，请编辑名称并选取SKU');
+}
+function delSectionInManager(si){
+  if(!confirm(`确定删除套餐区 "${currentData.sections[si].name}" 及其所有组合包吗？`)) return;
+  currentData.sections.splice(si,1);
+  showSectionManager(); showToast('套餐区已删除');
+}
+function saveSectionManager(){
+  currentData.sections.forEach((s,si)=>{
+    const nm=document.getElementById(`sm_name_${si}`); if(nm) s.name=nm.value.trim()||s.name;
+    ['C','D','E','F','G','H'].forEach(f=>{
+      const sel=document.getElementById(`sm_${si}_${f}`); if(!sel)return;
+      s.base['sku'+f]=sel.value;
+      if(sel.value){ const p=getSkuPrice(sel.value); if(p>0)s.base[f]=p; }
+      else s.base[f]=0;
+    });
+  });
+  closeModal('sectionManagerModal'); renderAll(); showToast('套餐区已全部更新！');
+}
+
+// ==================== COMPARISON (V3.3) ====================
+function showCompare(){
+  const baseList=document.getElementById('compareBaseList');
+  const targetList=document.getElementById('compareTargetList');
+  let baseHtml='', targetHtml='';
+  let hasNew=false;
+
+  currentData.sections.forEach((s,si)=>{
+    s.packages.forEach((p,pi)=>{
+      const pid=`${si}_${pi}`;
+      const isNewOrMod = p.isNew || p.isModified;
+      if(isNewOrMod) hasNew=true;
+      const checked=isNewOrMod?'checked':'';
+      const tag= p.isNew?'<span class="pkg-mode-tag tag-new">新增</span>':(p.isModified?'<span class="pkg-mode-tag tag-mod">修改</span>':'');
+      // Compute J price
+      const m=getPkgMetrics(si,pi);
+      const priceJ=(p.J!==null&&p.J!==undefined)?p.J:m.J;
+      baseHtml+=`<div class="compare-pkg-item"><label style="display:flex;align-items:center;cursor:pointer;width:100%;">
+        <input type="checkbox" class="compare-checkbox" value="${pid}" ${checked} data-role="base"> ${p.name} <span style="font-size:9px;color:#999;margin-left:4px;">[${s.name}]</span>${tag}<span class="pkg-price">¥${priceJ.toLocaleString()}</span></label></div>`;
+      targetHtml+=`<div class="compare-pkg-item"><label style="display:flex;align-items:center;cursor:pointer;width:100%;">
+        <input type="checkbox" class="compare-checkbox" value="${pid}" data-role="target"> ${p.name} <span style="font-size:9px;color:#999;margin-left:4px;">[${s.name}]</span><span class="pkg-price">¥${priceJ.toLocaleString()}</span></label></div>`;
+    });
+  });
+
+  if(!hasNew) baseHtml='<div class="compare-empty">暂无新增/修改的包，请在套餐区中新增或修改组合包后重试</div>';
+  baseList.innerHTML=baseHtml;
+  targetList.innerHTML=targetHtml;
+  document.getElementById('compareModal').style.display='flex';
+}
+
+function doCompare(){
+  const baseCbs=document.querySelectorAll('#compareBaseList input[data-role="base"]:checked');
+  const targetCbs=document.querySelectorAll('#compareTargetList input[data-role="target"]:checked');
+  if(baseCbs.length===0){ showToast('请至少选择1个基准组合包'); return; }
+  if(targetCbs.length===0){ showToast('请至少选择1个对比组合包'); return; }
+
+  const basePkgs=[], targetPkgs=[];
+  baseCbs.forEach(cb=>{
+    const [si,pi]=cb.value.split('_').map(Number);
+    const s=currentData.sections[si]; const p=s.packages[pi];
+    basePkgs.push({si,pi,name:p.name,section:s.name,p});
+  });
+  targetCbs.forEach(cb=>{
+    const [si,pi]=cb.value.split('_').map(Number);
+    const s=currentData.sections[si]; const p=s.packages[pi];
+    targetPkgs.push({si,pi,name:p.name,section:s.name,p});
+  });
+
+  // Store globally for advantage analysis
+  const metricsBase=basePkgs.map(x=>getPkgMetrics(x.si,x.pi));
+  const metricsTarget=targetPkgs.map(x=>getPkgMetrics(x.si,x.pi));
+  lastCompareData={basePkgs, targetPkgs, metricsBase, metricsTarget};
+
+  closeModal('compareModal');
+  renderCompareResult(basePkgs, targetPkgs);
+}
+
+function getPkgMetrics(si,pi){
+  const s=currentData.sections[si];
+  const p=s.packages[pi];
+  const b=s.base;
+  const I=calcTotal(p.C,p.D,p.E,p.F||0,p.G||0,p.H||0,b.C,b.D,b.E,b.F,b.G,b.H);
+  const J=(p.J!==null&&p.J!==undefined)?p.J:calcSell(I,p.C);
+  const K=calcDisc(J,p.C,I);
+  const M=(p.M!==null&&p.M!==undefined)?p.M:calcAct(J,p.L);
+  return {I,J,K,M,p};
+}
+
+function renderCompareResult(basePkgs, targetPkgs){
+  const title=document.getElementById('compareResultTitle');
+  const content=document.getElementById('compareResultContent');
+  const baseNames=basePkgs.map(x=>x.name).join('、');
+  const targetNames=targetPkgs.map(x=>x.name).join('、');
+  title.textContent=`组合包对比：[${baseNames}] VS [${targetNames}]`;
+
+  // Build comparison table
+  let h=`<table class="compare-result-table">
+    <thead><tr>
+      <th rowspan="2" style="min-width:140px;">对比维度</th>
+      <th colspan="${basePkgs.length}" style="background:#fffbe6;">基准组合包（新增/修改）</th>
+      <th colspan="${targetPkgs.length}" style="background:#e6f7ff;">对比组合包</th>
+    </tr><tr>`;
+  basePkgs.forEach(x=>{ h+=`<th style="background:#fffbe6;">${x.name}<br><span style="font-size:9px;color:#999;">${x.section}</span></th>`; });
+  targetPkgs.forEach(x=>{ h+=`<th style="background:#e6f7ff;">${x.name}<br><span style="font-size:9px;color:#999;">${x.section}</span></th>`; });
+  h+=`</tr></thead><tbody>`;
+
+  // Rows: C~H qty, I, J, K, M, dur, L
+  const fields=[{label:'售卖时间(天)',key:'dur',isNum:true},{label:'C:伯小乐权益包',key:'C',isNum:true},{label:'D:劲爆职位',key:'D',isNum:true},{label:'E:主动开聊',key:'E',isNum:true},{label:'F:超级置顶',key:'F',isNum:true},{label:'G:电话沟通',key:'G',isNum:true},{label:'H:人才雷达',key:'H',isNum:true}];
+  fields.forEach(f=>{
+    h+=`<tr><td class="pkg-name">${f.label}</td>`;
+    basePkgs.forEach(x=>{ h+=`<td>${x.p[f.key]||0}</td>`; });
+    targetPkgs.forEach(x=>{ h+=`<td>${x.p[f.key]||0}</td>`; });
+    h+=`</tr>`;
+  });
+
+  // Calculated rows
+  const metricsBase=basePkgs.map(x=>getPkgMetrics(x.si,x.pi));
+  const metricsTarget=targetPkgs.map(x=>getPkgMetrics(x.si,x.pi));
+
+  h+=`<tr style="border-top:2px solid var(--primary);"><td class="pkg-name"><b>I: 总刊例价</b></td>`;
+  metricsBase.forEach(m=>{ h+=`<td><b>¥${m.I.toLocaleString()}</b></td>`; });
+  metricsTarget.forEach(m=>{ h+=`<td><b>¥${m.I.toLocaleString()}</b></td>`; });
+  h+=`</tr>`;
+
+  h+=`<tr><td class="pkg-name"><b>J: 套餐售价</b></td>`;
+  metricsBase.forEach(m=>{ h+=`<td><b style="color:var(--primary);">¥${m.J.toLocaleString()}</b></td>`; });
+  metricsTarget.forEach(m=>{ h+=`<td><b style="color:var(--primary);">¥${m.J.toLocaleString()}</b></td>`; });
+  h+=`</tr>`;
+
+  h+=`<tr><td class="pkg-name"><b>K: 折扣率</b></td>`;
+  metricsBase.forEach(m=>{
+    let cls=''; if(m.K>1.1)cls='highlight-worse'; else if(m.K<0.9)cls='highlight-better';
+    h+=`<td class="${cls}">${(m.K*100).toFixed(1)}%</td>`;
+  });
+  metricsTarget.forEach(m=>{
+    let cls=''; if(m.K>1.1)cls='highlight-worse'; else if(m.K<0.9)cls='highlight-better';
+    h+=`<td class="${cls}">${(m.K*100).toFixed(1)}%</td>`;
+  });
+  h+=`</tr>`;
+
+  h+=`<tr><td class="pkg-name"><b>M: 刊例价</b></td>`;
+  metricsBase.forEach(m=>{ h+=`<td>¥${m.M.toLocaleString()}</td>`; });
+  metricsTarget.forEach(m=>{ h+=`<td>¥${m.M.toLocaleString()}</td>`; });
+  h+=`</tr>`;
+
+  h+=`<tr><td class="pkg-name">L: 换购</td>`;
+  basePkgs.forEach(x=>{ h+=`<td>${x.pkg.L}</td>`; });
+  targetPkgs.forEach(x=>{ h+=`<td>${x.pkg.L}</td>`; });
+  h+=`</tr>`;
+
+  // Advantage / disadvantage summary
+  h+=`</tbody></table>`;
+
+  // Summary cards
+  const avgKBase=metricsBase.reduce((a,m)=>a+m.K,0)/(metricsBase.length||1);
+  const avgKTarget=metricsTarget.reduce((a,m)=>a+m.K,0)/(metricsTarget.length||1);
+  const totalIBase=metricsBase.reduce((a,m)=>a+m.I,0);
+  const totalITarget=metricsTarget.reduce((a,m)=>a+m.I,0);
+  const totalJBase=metricsBase.reduce((a,m)=>a+m.J,0);
+  const totalJTarget=metricsTarget.reduce((a,m)=>a+m.J,0);
+
+  h+=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px;">
+    <div style="background:#f6ffed;padding:10px 14px;border-radius:8px;border:1px solid #b7eb8f;">
+      <div style="font-size:11px;color:#666;">基准包 合计总刊例价</div>
+      <div style="font-size:18px;font-weight:700;color:#389e0d;">¥${totalIBase.toLocaleString()}</div>
+      <div style="font-size:11px;color:#666;margin-top:4px;">平均折扣率：${(avgKBase*100).toFixed(1)}%</div>
+    </div>
+    <div style="background:#e6f7ff;padding:10px 14px;border-radius:8px;border:1px solid #91d5ff;">
+      <div style="font-size:11px;color:#666;">对比包 合计总刊例价</div>
+      <div style="font-size:18px;font-weight:700;color:#1677ff;">¥${totalITarget.toLocaleString()}</div>
+      <div style="font-size:11px;color:#666;margin-top:4px;">平均折扣率：${(avgKTarget*100).toFixed(1)}%</div>
+    </div>
+  </div>`;
+
+  // Diff summary
+  const diffI=totalITarget-totalIBase, diffJ=totalJTarget-totalJBase;
+  h+=`<div style="margin-top:10px;padding:8px 12px;background:#fffbe6;border-radius:6px;font-size:11px;">
+    <b>对比摘要：</b>`;
+  if(diffI>0) h+=`对比包总刊例价 <span style="color:var(--danger);">高出 ¥${diffI.toLocaleString()}</span>；`;
+  else if(diffI<0) h+=`对比包总刊例价 <span style="color:var(--success);">低 ¥${Math.abs(diffI).toLocaleString()}</span>；`;
+  else h+=`总刊例价 持平；`;
+  if(diffJ>0) h+=`对比包总售价 <span style="color:var(--danger);">高出 ¥${diffJ.toLocaleString()}</span>`;
+  else if(diffJ<0) h+=`对比包总售价 <span style="color:var(--success);">低 ¥${Math.abs(diffJ).toLocaleString()}</span>`;
+  else h+=`总售价 持平`;
+  h+=`。</div>`;
+
+  content.innerHTML=h;
+  document.getElementById('compareResultModal').style.display='flex';
+}
+
+// ==================== ADVANTAGE ANALYSIS — IN MODAL (V3.6) ====================
+function doAdvantageAnalysis(){
+  const baseCbs=document.querySelectorAll('#compareBaseList input[data-role="base"]:checked');
+  const targetCbs=document.querySelectorAll('#compareTargetList input[data-role="target"]:checked');
+  if(baseCbs.length===0){ showToast('请至少选择1个基准组合包'); return; }
+  if(targetCbs.length===0){ showToast('请至少选择1个对比组合包'); return; }
+
+  const basePkgs=[], targetPkgs=[];
+  baseCbs.forEach(cb=>{
+    const [si,pi]=cb.value.split('_').map(Number);
+    const s=currentData.sections[si]; const p=s.packages[pi];
+    basePkgs.push({si,pi,name:p.name,section:s.name,pkg:p});
+  });
+  targetCbs.forEach(cb=>{
+    const [si,pi]=cb.value.split('_').map(Number);
+    const s=currentData.sections[si]; const p=s.packages[pi];
+    targetPkgs.push({si,pi,name:p.name,section:s.name,pkg:p});
+  });
+
+  const metricsBase=basePkgs.map(x=>getPkgMetrics(x.si,x.pi));
+  const metricsTarget=targetPkgs.map(x=>getPkgMetrics(x.si,x.pi));
+  lastCompareData={basePkgs, targetPkgs, metricsBase, metricsTarget};
+
+  // Replace modal body with analysis
+  const body=document.querySelector('#compareModal .modal-body');
+  body.innerHTML=buildAdvAnalysisHTML(basePkgs, targetPkgs, metricsBase, metricsTarget);
+
+  // Change footer to just close
+  const footer=document.getElementById('compareModalFooter');
+  footer.innerHTML='<button class="btn btn-outline" onclick="restoreCompareModal()">返回选择</button><button class="btn btn-primary" onclick="closeModal(\'compareModal\')">关闭</button>';
+}
+
+function buildAdvAnalysisHTML(basePkgs, targetPkgs, metricsBase, metricsTarget){
+  let h='<div style="font-size:12px;color:#666;margin-bottom:14px;">📊 <b>对比优势分析报告</b></div>';
+
+  // === Summary Cards ===
+  const totalIBase=metricsBase.reduce((a,m)=>a+m.I,0);
+  const totalITarget=metricsTarget.reduce((a,m)=>a+m.I,0);
+  const totalJBase=metricsBase.reduce((a,m)=>a+m.J,0);
+  const totalJTarget=metricsTarget.reduce((a,m)=>a+m.J,0);
+  const avgKBase=metricsBase.reduce((a,m)=>a+m.K,0)/(metricsBase.length||1);
+  const avgKTarget=metricsTarget.reduce((a,m)=>a+m.K,0)/(metricsTarget.length||1);
+  const diffI=totalITarget-totalIBase, diffJ=totalJTarget-totalJBase;
+
+  h+=`<div class="analysis-summary">
+    <div class="analysis-summary-card" style="background:#f6ffed;border:1px solid #b7eb8f;">
+      <div class="lbl">基准包 合计刊例价</div><div class="num" style="color:#389e0d;">¥${totalIBase.toLocaleString()}</div>
+      <div class="lbl">售价 ¥${totalJBase.toLocaleString()} · 折扣${(avgKBase*100).toFixed(1)}%</div>
+    </div>
+    <div class="analysis-summary-card" style="background:#e6f7ff;border:1px solid #91d5ff;">
+      <div class="lbl">对比包 合计刊例价</div><div class="num" style="color:#1677ff;">¥${totalITarget.toLocaleString()}</div>
+      <div class="lbl">售价 ¥${totalJTarget.toLocaleString()} · 折扣${(avgKTarget*100).toFixed(1)}%</div>
+    </div>
+    <div class="analysis-summary-card" style="background:${diffI>0?'#fff1f0':'#f6ffed'};border:1px solid ${diffI>0?'#ffa39e':'#b7eb8f'};">
+      <div class="lbl">刊例价差异</div><div class="num" style="color:${diffI>0?'var(--danger)':'var(--success)'};">${diffI>=0?'+':''}¥${diffI.toLocaleString()}</div>
+      <div class="lbl">售价差异 ${diffJ>=0?'+':''}¥${diffJ.toLocaleString()}</div>
+    </div>
+  </div>`;
+
+  // === Static Comparison Table ===
+  h+=`<div style="overflow-x:auto;margin-bottom:14px;">
+    <table class="analysis-table">
+      <thead><tr><th>维度</th>`;
+  basePkgs.forEach(x=>{ h+=`<th style="background:#fffbe6;">${x.name}<br><small style="color:#999;">${x.section}</small></th>`; });
+  targetPkgs.forEach(x=>{ h+=`<th style="background:#e6f7ff;">${x.name}<br><small style="color:#999;">${x.section}</small></th>`; });
+  h+=`</tr></thead><tbody>`;
+
+  const fields=[{label:'售卖时间(天)',key:'dur'},{label:'C:伯小乐权益包',key:'C'},{label:'D:劲爆职位',key:'D'},{label:'E:主动开聊',key:'E'},{label:'F:超级置顶',key:'F'},{label:'G:电话沟通',key:'G'},{label:'H:人才雷达',key:'H'}];
+  fields.forEach(f=>{
+    h+=`<tr><td style="text-align:left;font-weight:600;">${f.label}</td>`;
+    basePkgs.forEach(x=>{ h+=`<td>${x.pkg[f.key]||0}</td>`; });
+    targetPkgs.forEach(x=>{ h+=`<td>${x.pkg[f.key]||0}</td>`; });
+    h+=`</tr>`;
+  });
+  h+=`<tr style="border-top:2px solid var(--border);"><td style="text-align:left;font-weight:700;">I: 总刊例价</td>`;
+  metricsBase.forEach(m=>{ h+=`<td style="font-weight:700;">¥${m.I.toLocaleString()}</td>`; });
+  metricsTarget.forEach(m=>{ h+=`<td style="font-weight:700;">¥${m.I.toLocaleString()}</td>`; });
+  h+=`</tr><tr><td style="text-align:left;font-weight:700;">J: 套餐售价</td>`;
+  metricsBase.forEach(m=>{ h+=`<td style="font-weight:700;color:var(--primary);">¥${m.J.toLocaleString()}</td>`; });
+  metricsTarget.forEach(m=>{ h+=`<td style="font-weight:700;color:var(--primary);">¥${m.J.toLocaleString()}</td>`; });
+  h+=`</tr><tr><td style="text-align:left;font-weight:700;">K: 折扣率</td>`;
+  metricsBase.forEach(m=>{ h+=`<td>${(m.K*100).toFixed(1)}%</td>`; });
+  metricsTarget.forEach(m=>{ h+=`<td>${(m.K*100).toFixed(1)}%</td>`; });
+  h+=`</tr><tr><td style="text-align:left;font-weight:700;">M: 刊例价</td>`;
+  metricsBase.forEach(m=>{ h+=`<td>¥${m.M.toLocaleString()}</td>`; });
+  metricsTarget.forEach(m=>{ h+=`<td>¥${m.M.toLocaleString()}</td>`; });
+  h+=`</tr><tr><td style="text-align:left;font-weight:700;">日均价 (J/dur)</td>`;
+  metricsBase.forEach(m=>{ h+=`<td>¥${(m.J/(basePkgs[metricsBase.indexOf(m)].pkg.dur||1)).toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g,',')}</td>`; });
+  metricsTarget.forEach(m=>{ h+=`<td>¥${(m.J/(targetPkgs[metricsTarget.indexOf(m)].pkg.dur||1)).toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g,',')}</td>`; });
+  h+=`</tr></tbody></table></div>`;
+
+  // === AUTO ANALYSIS ===
+  h+=`<div style="border:2px solid #ffccc7;border-radius:8px;padding:12px;background:#fff2f0;">`;
+  h+=`<h4 style="font-size:13px;color:var(--danger);margin-bottom:10px;">🔍 智能分析报告</h4>`;
+
+  const advantages=[], disadvantages=[], inversions=[];
+  let totalIssues=0;
+
+  for(let i=0;i<basePkgs.length;i++){
+    const bp=basePkgs[i], mb=metricsBase[i];
+    const durB=bp.pkg.dur||1, perDayB=mb.J/durB;
+
+    for(let j=0;j<targetPkgs.length;j++){
+      const tp=targetPkgs[j], mt=metricsTarget[j];
+      const durT=tp.pkg.dur||1, perDayT=mt.J/durT;
+
+      const pair=`「${bp.name}」vs「${tp.name}」`;
+
+      if(mb.I>mt.I && mb.J<mt.J){
+        totalIssues++;
+        inversions.push({
+          title:`⚠️ <b>倒挂风险</b> — ${pair}`,
+          detail:`基准包刊例价 ¥${mb.I.toLocaleString()} 高于对比包 ¥${mt.I.toLocaleString()}，但售价 ¥${mb.J.toLocaleString()} 反而低于 ¥${mt.J.toLocaleString()}。可能存在定价倒挂：更贵的套餐卖得更便宜。`,
+          suggestion:buildInversionAdvice(bp,tp,mb,mt)
+        });
+      }
+
+      if(mb.I>mt.I && perDayB<perDayT){
+        totalIssues++;
+        inversions.push({
+          title:`⚠️ <b>日均价倒挂</b> — ${pair}`,
+          detail:`基准包日均价 ¥${Math.round(perDayB).toLocaleString()}（总刊例价¥${mb.I.toLocaleString()}）低于对比包日均价 ¥${Math.round(perDayT).toLocaleString()}（总刊例价¥${mt.I.toLocaleString()}），日均价与总价值不匹配。`,
+          suggestion:buildDailyInversionAdvice(bp,tp,mb,mt,perDayB,perDayT)
+        });
+      }
+
+      if(mb.K>1.1){
+        totalIssues++;
+        disadvantages.push({
+          title:`📈 <b>折扣率偏高</b> — ${bp.name}`,
+          detail:`折扣率 ${(mb.K*100).toFixed(1)}%（>110%），套餐售价¥${mb.J.toLocaleString()} 已超过刊例价¥${mb.I.toLocaleString()}，客户感知为"加价"而非"折扣"。`,
+          suggestion:`建议调整售价至 ¥${Math.round(mb.I*0.85).toLocaleString()}~¥${mb.I.toLocaleString()} 区间，使折扣率控制在85%~100%以保持竞争力。`
+        });
+      }
+      if(mt.K>1.1){
+        totalIssues++;
+        disadvantages.push({
+          title:`📈 <b>折扣率偏高</b> — ${tp.name}`,
+          detail:`折扣率 ${(mt.K*100).toFixed(1)}%（>110%），套餐售价¥${mt.J.toLocaleString()} 已超过刊例价¥${mt.I.toLocaleString()}。`,
+          suggestion:`建议调整售价至 ¥${Math.round(mt.I*0.85).toLocaleString()}~¥${mt.I.toLocaleString()} 区间。`
+        });
+      }
+
+      if(mb.K<0.7){
+        totalIssues++;
+        disadvantages.push({
+          title:`📉 <b>折扣率过低</b> — ${bp.name}`,
+          detail:`折扣率仅 ${(mb.K*100).toFixed(1)}%（<70%），折让过大可能影响利润空间。`,
+          suggestion:`建议将售价调整至 ¥${Math.round(mb.I*0.75).toLocaleString()}~¥${Math.round(mb.I*0.85).toLocaleString()}，确保合理利润。`
+        });
+      }
+      if(mt.K<0.7){
+        totalIssues++;
+        disadvantages.push({
+          title:`📉 <b>折扣率过低</b> — ${tp.name}`,
+          detail:`折扣率仅 ${(mt.K*100).toFixed(1)}%（<70%），折让过大可能影响利润空间。`,
+          suggestion:`建议将售价调整至 ¥${Math.round(mt.I*0.75).toLocaleString()}~¥${Math.round(mt.I*0.85).toLocaleString()}。`
+        });
+      }
+
+      if(mb.K>=0.85 && mb.K<=1.0){
+        advantages.push({title:`✅ <b>折扣健康</b> — ${bp.name}`,detail:`折扣率 ${(mb.K*100).toFixed(1)}%，处于85%~100%健康区间，定价合理。`});
+      }
+      if(mt.K>=0.85 && mt.K<=1.0){
+        advantages.push({title:`✅ <b>折扣健康</b> — ${tp.name}`,detail:`折扣率 ${(mt.K*100).toFixed(1)}%，处于85%~100%健康区间，定价合理。`});
+      }
+      if(mb.I>mt.I && perDayB>perDayT){
+        advantages.push({title:`✅ <b>日均价合理</b> — ${pair}`,detail:`基准包日均价 ¥${Math.round(perDayB).toLocaleString()} > 对比包 ¥${Math.round(perDayT).toLocaleString()}，符合"高价值高日均"规律。`});
+      }
+    }
+  }
+
+  const baseNames=basePkgs.map(x=>x.name).join('、');
+  const targetNames=targetPkgs.map(x=>x.name).join('、');
+
+  let overallStatus='', overallColor='';
+  if(totalIssues===0){ overallStatus='✅ 整体评估：定价结构健康，未发现明显问题。'; overallColor='#389e0d'; }
+  else if(totalIssues<=2){ overallStatus=`⚠️ 整体评估：发现 ${totalIssues} 个问题，建议审查后调整。`; overallColor='#faad14'; }
+  else { overallStatus=`🚨 整体评估：发现 ${totalIssues} 个问题，存在较大优化空间，建议重点关注。`; overallColor='#ff4d4f'; }
+
+  h+=`<div style="padding:10px;background:#fafafa;border-radius:6px;margin-bottom:10px;">
+    <div style="font-size:13px;font-weight:700;color:${overallColor};margin-bottom:4px;">${overallStatus}</div>
+    <div style="font-size:10px;color:#666;">基准：${baseNames}（${basePkgs.length}个） | 对比：${targetNames}（${targetPkgs.length}个）</div>
+  </div>`;
+
+  h+=`<h4 style="font-size:12px;color:var(--success);margin-bottom:4px;">✅ 优势亮点</h4>`;
+  if(advantages.length===0) h+=`<div style="color:#999;font-size:11px;padding:6px;">持续监控中…</div>`;
+  else advantages.slice(0,8).forEach(a=>{
+    h+=`<div class="analysis-card advantage" style="margin-bottom:4px;"><h4>${a.title}</h4><p>${a.detail||''}</p></div>`;
+  });
+
+  h+=`<h4 style="font-size:12px;color:var(--warning);margin-bottom:4px;margin-top:10px;">⚠️ 潜在劣势</h4>`;
+  if(disadvantages.length===0) h+=`<div style="color:#999;font-size:11px;padding:6px;">暂无明显劣势</div>`;
+  else disadvantages.slice(0,6).forEach(d=>{
+    h+=`<div class="analysis-card disadvantage" style="margin-bottom:4px;"><h4>${d.title}</h4><p>${d.detail||''}</p>${d.suggestion?`<div class="suggestion">💡 ${d.suggestion}</div>`:''}</div>`;
+  });
+
+  h+=`<h4 style="font-size:12px;color:var(--danger);margin-bottom:4px;margin-top:10px;">🚨 倒挂风险 & 调整建议</h4>`;
+  if(inversions.length===0) h+=`<div style="color:#999;font-size:11px;padding:6px;">未检测到定价倒挂问题</div>`;
+  else inversions.forEach(inv=>{
+    h+=`<div class="analysis-card inversion" style="margin-bottom:4px;"><h4>${inv.title}</h4><p>${inv.detail||''}</p><div class="suggestion">💡 ${inv.suggestion}</div></div>`;
+  });
+
+  h+=`</div>`;
+  return h;
+}
+
+// Restore the compare modal back to selection view
+function restoreCompareModal(){
+  showCompare(); // re-renders the selection lists
+}
+
+function buildInversionAdvice(bp,tp,mb,mt){
+  const targetJ=Math.ceil(mt.J*1.1/100)*100;
+  return `建议将「${bp.name}」售价从 ¥${mb.J.toLocaleString()} 上调至至少 ¥${targetJ.toLocaleString()}（不低于「${tp.name}」售价 ¥${mt.J.toLocaleString()}），消除倒挂；或者将「${tp.name}」售价下调至 ¥${Math.round(mb.J*0.95).toLocaleString()} 以下。`;
+}
+
+function buildDailyInversionAdvice(bp,tp,mb,mt,perDayB,perDayT){
+  const targetDaily=Math.ceil(perDayT/100)*100;
+  return `建议将「${bp.name}」日均价从 ¥${Math.round(perDayB).toLocaleString()} 上调至至少 ¥${targetDaily.toLocaleString()}（不低于「${tp.name}」日均价 ¥${Math.round(perDayT).toLocaleString()}），确保"高价值=高日均"的定价逻辑。`;
+}
+
+// ==================== DISCLOSURE (V3.5) ====================
+function getBenefitLabels(mode){
+  const m=mode||currentMode;
+  if(m==='zhixiaole') return {C:'权益包数量',E:'主动开聊',F:'代招公司',G:'电话沟通',H:'极速聊-访客代聊标准版'};
+  if(m==='58') return {C:'权益包数量',E:'主动开聊',F:'超级置顶',G:'电话沟通',H:'极速聊-访客代聊标准版'};
+  return {C:'权益包数量',E:'主动开聊',F:'超级置顶',G:'电话沟通',H:'极速聊-访客代聊标准版'};
+}
+function getDLabel(skuD){
+  if(!skuD) return '劲爆职位';
+  const sku=findSku(skuD);
+  if(!sku||!sku.skuFullName) return '劲爆职位';
+  if(sku.skuFullName.includes('容器')) return '劲爆职位-容器';
+  if(sku.skuFullName.includes('资源')) return '劲爆职位-资源';
+  return '劲爆职位';
+}
+
+function buildBenefitsText(p, base, mode){
+  const labels=getBenefitLabels(mode);
+  const dLabel=getDLabel(base.skuD);
+  const parts=[];
+  ['C','D','E','F','G','H'].forEach(k=>{
+    const qty=p[k]||0;
+    if(qty>0){
+      const label=k==='D'?dLabel:labels[k];
+      parts.push(`${label}×${qty}`);
+    }
+  });
+  return parts.length>0?parts.join('，'):'无';
+}
+
+let disclosureRows=[];
+
+function showDisclosure(){
+  disclosureRows=[];
+  const seen=new Set();
+  // 遍历所有三个模式，收集全部披露数据
+  ['58','ganji'].forEach(m=>{
+    const data=getDataByMode(m);
+    data.sections.forEach(s=>{
+      const b=s.base;
+      s.packages.forEach(p=>{
+        const I=calcTotal(p.C,p.D,p.E,p.F||0,p.G||0,p.H||0,b.C,b.D,b.E,b.F,b.G,b.H);
+        const J=(p.J!==null&&p.J!==undefined)?p.J:calcSell(I,p.C);
+        const M=(p.M!==null&&p.M!==undefined)?p.M:calcAct(J,p.L);
+        const pname=p.productName||p.name;
+        const durTxt=(p.dur||0)+'天';
+        const nTxt=p.N||'—';
+        const benefits=buildBenefitsHtml(p, b, m);
+        const rowKey=`${m}|${pname}|${durTxt}|${J}|${M}|${nTxt}`;
+        if(seen.has(rowKey)) return;
+        seen.add(rowKey);
+        const srcLabel=m==='58'?'58伯小乐':'赶集直招';
+        disclosureRows.push({
+          pname,
+          source: m,
+          sourceLabel: srcLabel,
+          html:`<tr><td class="pname">${pname}</td><td>${srcLabel}</td><td>${durTxt}</td><td class="benefits">${benefits}</td><td style="font-weight:700;color:var(--primary);">` + '¥' + `${J.toLocaleString()}</td><td style="font-weight:600;color:#722ed1;">` + '¥' + `${M.toLocaleString()}</td><td style="font-size:12px;">${nTxt}</td></tr>`
+        });
+      });
+    });
+  });
+  renderDisclosureFiltered();
+  document.getElementById('disclosureModal').style.display='flex';
+}
+
+function renderDisclosureFiltered(){
+  const content=document.getElementById('disclosureContent');
+  const selected=getSelectedDisclosureNames();
+  const allNames=[...new Set(disclosureRows.map(r=>r.pname))].sort();
+  if(!allNamesInitialized){ allDisclosureNames=allNames; allNamesInitialized=true; }
+  const all=allNamesInitialized?allDisclosureNames:allNames;
+  const filteredRows=(selected.length===0||selected.length===all.length)
+    ? disclosureRows
+    : disclosureRows.filter(r=>selected.includes(r.pname));
+  let h='<table class="disclosure-table"><thead><tr>';
+  h+='<th>伯小乐/职小乐<br>商品名称</th><th>来源</th><th>时长</th><th>伯小乐权益<br><span style="font-size:9px;font-weight:400;">（含数量）</span></th><th>伯小乐售价<br><span style="font-size:9px;font-weight:400;">（参与换购）</span></th><th>不换购的定价<br><span style="font-size:9px;font-weight:400;">（刊例价）</span></th><th>发布限制</th>';
+  h+='</tr></thead><tbody>';
+  h+=filteredRows.map(r=>r.html).join('');
+  h+=`</tbody></table>`;
+  content.innerHTML=h;
+  populateDisclosureOptions(all, selected);
+  updateDisclosureFilterLabel(selected, all.length);
+}
+
+function buildBenefitsHtml(p, base, mode){
+  const labels=getBenefitLabels(mode);
+  const dLabel=getDLabel(base.skuD);
+  const parts=[];
+  ['C','D','E','F','G','H'].forEach(k=>{
+    const qty=p[k]||0;
+    if(qty>0){
+      const label=k==='D'?dLabel:labels[k];
+      parts.push(`<span class="benefit-tag">${label}×${qty}</span>`);
+    }
+  });
+  if(parts.length===0) return '<span style="color:#999;">无</span>';
+
+  // Group benefits by type: D (劲爆职位) separate, rest grouped
+  let html='';
+  parts.forEach(pt=>{ html+=pt+'  '; });
+  return html;
+}
+
+// ==================== DISCLOSURE FILTER ====================
+let allDisclosureNames=[];
+let allNamesInitialized=false;
+let _disclosureFilterBackup={};
+
+function getSelectedDisclosureNames(){
+  const cbs=document.querySelectorAll('#disclosureFilterOptions input[type="checkbox"]');
+  const sel=[]; cbs.forEach(cb=>{if(cb.checked)sel.push(cb.value);}); return sel;
+}
+function populateDisclosureOptions(names, selected){
+  const container=document.getElementById('disclosureFilterOptions');
+  if(!container) return;
+  const searchVal=document.getElementById('disclosureFilterSearch')?.value.toLowerCase()||'';
+  const esc=v=>String(v||'').replace(/"/g,'&quot;').replace(/</g,'&lt;');
+  const filtered=searchVal?names.filter(n=>n.toLowerCase().includes(searchVal)):names;
+  container.innerHTML=filtered.map(n=>{
+    const checked=selected.length===0||selected.includes(n)?' checked':'';
+    return `<label style="display:flex;align-items:center;gap:6px;padding:3px 4px;cursor:pointer;font-size:11px;border-radius:2px;margin:1px 0;" onmouseenter="this.style.background='#f5f5f5'" onmouseleave="this.style.background='transparent'">
+      <input type="checkbox" value="${esc(n)}"${checked} style="margin:0;">
+      <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${esc(n)}</span>
+    </label>`;
+  }).join('');
+  if(filtered.length===0) container.innerHTML='<div style="font-size:11px;color:#999;padding:8px;text-align:center;">无匹配结果</div>';
+}
+function updateDisclosureFilterLabel(selected, total){
+  const label=document.getElementById('disclosureFilterLabel');
+  if(!label) return;
+  if(selected.length===0||selected.length===total) label.textContent='全部商品名称';
+  else label.textContent=`已选 ${selected.length} / ${total} 个`;
+}
+function toggleDisclosureFilterDropdown(e){
+  e.stopPropagation();
+  const dd=document.getElementById('disclosureFilterDropdown');
+  const isOpen=dd.style.display==='block';
+  if(isOpen){
+    dd.style.display='none';
+  } else {
+    // Save current checkbox state as backup for cancel
+    _disclosureFilterBackup={};
+    document.querySelectorAll('#disclosureFilterOptions input[type="checkbox"]').forEach(cb=>{
+      _disclosureFilterBackup[cb.value]=cb.checked;
+    });
+    dd.style.display='block';
+    const srch=document.getElementById('disclosureFilterSearch');
+    if(srch){srch.value='';srch.focus();}
+    filterDisclosureOptions();
+  }
+}
+function filterDisclosureOptions(){
+  const names=allNamesInitialized?allDisclosureNames:[...new Set(disclosureRows.map(r=>r.pname))].sort();
+  const selected=getSelectedDisclosureNames();
+  populateDisclosureOptions(names, selected);
+}
+function selectAllDisclosureNames(){
+  document.querySelectorAll('#disclosureFilterOptions input[type="checkbox"]').forEach(cb=>cb.checked=true);
+}
+function deselectAllDisclosureNames(){
+  document.querySelectorAll('#disclosureFilterOptions input[type="checkbox"]').forEach(cb=>cb.checked=false);
+}
+
+function confirmDisclosureFilter(){
+  document.getElementById('disclosureFilterDropdown').style.display='none';
+  const selected=getSelectedDisclosureNames();
+  const all=allNamesInitialized?allDisclosureNames:[...new Set(disclosureRows.map(r=>r.pname))].sort();
+  updateDisclosureFilterLabel(selected, all.length);
+  renderDisclosureFiltered();
+}
+function cancelDisclosureFilter(){
+  // Restore checkboxes to state when dropdown opened
+  document.querySelectorAll('#disclosureFilterOptions input[type="checkbox"]').forEach(cb=>{
+    cb.checked=!!_disclosureFilterBackup[cb.value];
+  });
+  document.getElementById('disclosureFilterDropdown').style.display='none';
+}
+
+function exportDisclosure(){
+  let csv='伯小乐/职小乐商品名称,来源,时长,伯小乐权益,伯小乐售价（参与换购）,不换购的定价（刊例价）,发布限制\n';
+  const seen=new Set();
+  const selected=getSelectedDisclosureNames();
+  const allNames=allNamesInitialized?allDisclosureNames:[...new Set(disclosureRows.map(r=>r.pname))].sort();
+  const filterActive=selected.length>0&&selected.length<allNames.length;
+  ['58','ganji'].forEach(m=>{
+    const data=getDataByMode(m);
+    const srcLabel=m==='58'?'58伯小乐':'赶集直招';
+    data.sections.forEach(s=>{
+      const b=s.base;
+      s.packages.forEach(p=>{
+        const I=calcTotal(p.C,p.D,p.E,p.F||0,p.G||0,p.H||0,b.C,b.D,b.E,b.F,b.G,b.H);
+        const J=(p.J!==null&&p.J!==undefined)?p.J:calcSell(I,p.C);
+        const M=(p.M!==null&&p.M!==undefined)?p.M:calcAct(J,p.L);
+        const benefits=buildBenefitsText(p, b, m);
+        const pname=(p.productName||p.name).replace(/"/g,'""');
+        const durTxt=(p.dur||0)+'天';
+        const nTxt=(p.N||'—').replace(/"/g,'""');
+        const rowKey=`${m}|${pname}|${durTxt}|${J}|${M}|${nTxt}`;
+        if(seen.has(rowKey)) return;
+        seen.add(rowKey);
+        if(filterActive&&!selected.includes(p.productName||p.name)) return;
+        csv+=`"${pname}","${srcLabel}","${durTxt}","${benefits.replace(/"/g,'""')}",${J},${M},"${nTxt}"\n`;
+      });
+    });
+  });
+  const blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');
+  a.href=url; a.download='刊例价披露_全模式_'+new Date().toISOString().slice(0,10)+'.csv'; a.click(); URL.revokeObjectURL(url); showToast('披露表导出成功！');
+}
+
+// ==================== EXPORT & RESET ====================
+function exportData(){
+  let csv='套餐区,组合包名称,伯小乐/职小乐商品名称,售卖时间,权益包数量(C),劲爆职位(D),主动开聊(E),超级置顶/代招公司(F),电话沟通(G),极速聊-访客代聊标准版(H),总刊例价(I),套餐售价(J),套餐折扣(K),换购(L),刊例价(M),发布限制(N)\n';
+  currentData.sections.forEach(s=>{ const b=s.base; s.packages.forEach(p=>{ const I=calcTotal(p.C,p.D,p.E,p.F||0,p.G||0,p.H||0,b.C,b.D,b.E,b.F,b.G,b.H); const J=(p.J!==null&&p.J!==undefined)?p.J:calcSell(I,p.C); const M=(p.M!==null&&p.M!==undefined)?p.M:calcAct(J,p.L); csv+=`"${s.name}","${p.name}","${p.productName||''}",${p.dur},${p.C},${p.D},${p.E},${p.F||0},${p.G||0},${p.H||0},${I},${J},${(calcDisc(J,p.C,I)*100).toFixed(2)}%,${p.L},${M},"${(p.N||'').replace(/"/g,'""')}"\n`; }); });
+  const blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');
+  a.href=url; a.download=`组合包定价_${getModeLabel(currentMode)}_${new Date().toISOString().slice(0,10)}.csv`; a.click(); URL.revokeObjectURL(url); showToast('导出成功！');
+}
+
+function resetAll(){
+  if(!confirm('确定重置所有修改？'))return;
+  currentData=getDataByMode(currentMode); currentData.sections.forEach(ensureSkuFields);
+  ensureProductNames();
+  originalData=deepClone(currentData); modificationLog=[]; lastCompareData=null;
+  document.getElementById('comparisonPanel').style.display='none';
+  renderAll(); showToast('已重置');
+}
+
+// ==================== VERSION SAVE/EXPORT (V4.2) ====================
+const VERSION_KEY='boxiaole_versions';
+const CURRENT_VERSION='V4.2';
+
+function getAllVersions(){
+  try{ return JSON.parse(localStorage.getItem(VERSION_KEY)||'{}'); }catch(e){ return {}; }
+}
+function saveVersion(){
+  if(!currentData){ showToast('无数据可保存'); return; }
+  const versions=getAllVersions();
+  const modeVersions=versions[currentMode]||[];
+  const nextNum=String(modeVersions.length+1).padStart(3,'0');
+  const versionId=CURRENT_VERSION+'.'+nextNum;
+  const versionData={
+    id:versionId,
+    mode:currentMode,
+    modeLabel:getModeLabel(currentMode),
+    timestamp:new Date().toISOString(),
+    data:deepClone(currentData),
+    skuData:deepClone(skuData)
+  };
+  modeVersions.push(versionData);
+  versions[currentMode]=modeVersions;
+  localStorage.setItem(VERSION_KEY,JSON.stringify(versions));
+  updateVersionBadge(versionId);
+  showToast('版本 '+versionId+' 已保存');
+}
+function loadLatestVersion(mode){
+  const versions=getAllVersions();
+  const modeVersions=versions[mode]||[];
+  if(modeVersions.length===0) return null;
+  return modeVersions[modeVersions.length-1];
+}
+function updateVersionBadge(versionId){
+  const badge=document.getElementById('versionBadge');
+  if(!badge) return;
+  if(versionId){
+    badge.textContent='当前版本: '+versionId;
+    badge.style.background='#f6ffed';
+    badge.style.color='#52c41a';
+  }else{
+    const latest=loadLatestVersion(currentMode);
+    if(latest){
+      badge.textContent='最后保存: '+latest.id;
+      badge.style.background='#fffbe6';
+      badge.style.color='#faad14';
+    }else{
+      badge.textContent='未保存';
+      badge.style.background='#f5f5f5';
+      badge.style.color='#999';
+    }
+  }
+}
+function exportVersionHTML(){
+  if(!currentData){ showToast('无数据可导出'); return; }
+  // 先保存版本
+  saveVersion();
+  const versions=getAllVersions();
+  const modeVersions=versions[currentMode]||[];
+  const latest=modeVersions[modeVersions.length-1];
+  if(!latest){ showToast('导出失败'); return; }
+  // 获取当前页面HTML
+  const htmlContent=document.documentElement.outerHTML;
+  // 在HTML最后一个script闭合标签前插入版本恢复脚本
+  const restoreScript='\n// ==================== AUTO SAVED VERSION ====================\n'+
+    'window._autoSavedVersion='+JSON.stringify(latest)+';\n'+
+    'window._autoSavedMode="'+currentMode+'";\n';
+  // 在最后一个script结束标签位置插入
+  const lastScriptIdx=htmlContent.lastIndexOf('<\/script>');
+  let newHTML=htmlContent.slice(0,lastScriptIdx)+restoreScript+htmlContent.slice(lastScriptIdx);
+  // 更新标题中的版本号
+  newHTML=newHTML.replace(/伯小乐组合包定价工具 V\d+\.\d+/,'伯小乐组合包定价工具 '+latest.id);
+  const blob=new Blob([newHTML],{type:'text/html;charset=utf-8'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;
+  a.download='伯小乐组合包定价工具_'+latest.id+'_'+getModeLabel(currentMode)+'_'+new Date().toISOString().slice(0,10)+'.html';
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('版本 '+latest.id+' 已导出');
+}
+function initVersionSystem(){
+  // 检查是否有自动保存的版本
+  if(window._autoSavedVersion){
+    try{
+      const saved=window._autoSavedVersion;
+      currentMode=saved.mode||'58';
+      currentData=saved.data;
+      if(saved.skuData) skuData=saved.skuData;
+      currentData.sections.forEach(ensureSkuFields);
+      ensureProductNames();
+      originalData=deepClone(currentData);
+      // 切换到正确的页签
+      document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+      const idx=currentMode==='58'?1:(currentMode==='zhixiaole'?2:3);
+      document.querySelector('.tab-btn:nth-child('+idx+')').classList.add('active');
+      renderAll();
+      updateVersionBadge(saved.id);
+      showToast('已恢复保存的版本: '+saved.id);
+      return true;
+    }catch(e){ console.error('恢复版本失败:',e); }
+  }
+  // 检查localStorage中是否有保存的版本
+  const latest=loadLatestVersion(currentMode);
+  if(latest){
+    try{
+      currentData=latest.data;
+      if(latest.skuData) skuData=latest.skuData;
+      currentData.sections.forEach(ensureSkuFields);
+      ensureProductNames();
+      originalData=deepClone(currentData);
+      renderAll();
+      updateVersionBadge(latest.id);
+      showToast('已加载最后保存的版本: '+latest.id);
+      return true;
+    }catch(e){ console.error('加载版本失败:',e); }
+  }
+  updateVersionBadge();
+  return false;
+}
+
+function closeModal(id){ document.getElementById(id).style.display='none'; if(id==='disclosureModal'){ allNamesInitialized=false; allDisclosureNames=[]; } }
+function showToast(msg){ const t=document.createElement('div'); t.className='toast'; t.textContent=msg; document.body.appendChild(t); setTimeout(()=>t.remove(),2500); }
+
+// ==================== XLSX UPLOAD ====================
+function triggerUpload(){ document.getElementById('xlsxFileInput').click(); }
+
+function handleXlsxUpload(event){
+  const file=event.target.files[0];
+  if(!file){ return; }
+  if(!file.name.match(/\.xlsx?$/i)){ showToast('请选择 .xlsx 或 .xls 文件'); return; }
+  showToast('正在解析Excel文件…');
+
+  const reader=new FileReader();
+  reader.onload=function(e){
+    try {
+      const data=new Uint8Array(e.target.result);
+      const wb=XLSX.read(data,{type:'array'});
+      const sheetNames=wb.SheetNames;
+
+      // Find target sheets
+      const sheet58=sheetNames.find(n=>n.includes('58')&&n.includes('伯小乐'));
+      const sheetGJ=sheetNames.find(n=>n.includes('赶集')&&n.includes('伯小乐'));
+      const sheetPrice=sheetNames.find(n=>n.includes('商品价格'));
+
+      if(!sheet58&&!sheetGJ){ showToast('未找到 "58伯小乐计算器" 或 "赶集伯小乐计算器" 工作表'); return; }
+
+      let new58Data=null, newGJData=null;
+
+      // Parse 58 sheet
+      if(sheet58){
+        const ws58=wb.Sheets[sheet58];
+        const rows=XLSX.utils.sheet_to_json(ws58,{header:1,defval:null,blankrows:false});
+        new58Data=parseSheetToSections(rows,'58');
+      }
+
+      // Parse GJ sheet
+      if(sheetGJ){
+        const wsGJ=wb.Sheets[sheetGJ];
+        const rows=XLSX.utils.sheet_to_json(wsGJ,{header:1,defval:null,blankrows:false});
+        newGJData=parseSheetToSections(rows,'ganji');
+      }
+
+      // Also update SKU if price sheet exists
+      if(sheetPrice){
+        const wsP=wb.Sheets[sheetPrice];
+        updateSkuFromSheet(wsP);
+      }
+
+      // Update global data functions by replacing their cached results
+      if(new58Data){
+        window._cached58Data=new58Data;
+        get58Data=function(){ return JSON.parse(JSON.stringify(window._cached58Data)); };
+      }
+      if(newGJData){
+        window._cachedGJData=newGJData;
+        getGanjiData=function(){ return JSON.parse(JSON.stringify(window._cachedGJData)); };
+      }
+
+      // Refresh
+      currentData=getDataByMode(currentMode);
+      currentData.sections.forEach(ensureSkuFields);
+      ensureProductNames();
+      originalData=deepClone(currentData);
+      modificationLog=[];
+      lastCompareData=null;
+      document.getElementById('comparisonPanel').style.display='none';
+      renderAll();
+
+      const count58=new58Data?new58Data.sections.reduce((a,s)=>a+s.packages.length,0):0;
+      const countGJ=newGJData?newGJData.sections.reduce((a,s)=>a+s.packages.length,0):0;
+      showToast(`Excel导入成功！58: ${count58}个包, 赶集: ${countGJ}个包`);
+
+    } catch(err){
+      console.error(err);
+      showToast('解析失败：'+err.message);
+    }
+  };
+  reader.readAsArrayBuffer(file);
+  event.target.value=''; // reset
+}
+
+function parseSheetToSections(rows,mode){
+  const sections=[];
+  let currentSection=null;
+  // SKU map for section base prices
+  const skuMap58={
+    200:'58_00001',66:'58_00002',100:'58_00003',1300:'58_00007',600:'58_00005',350:'58_00006',
+    500:'58_00009',125:'58_00017',300:'58_00011',2400:'58_00015',1780:'58_00013',1400:'58_00014',
+    560:'58_00018',440:'58_00019',388:'58_00020',260:'58_00020','':''
+  };
+  const skuMapGJ={
+    0:'',50:'GJ_00001',500:'58_00009',150:'GJ_00004',220:'GJ_00009',600:'GJ_00005',
+    2400:'58_00015',1780:'58_00013',1400:'58_00014','':''
+  };
+  const skuMap=(mode==='58')?skuMap58:skuMapGJ;
+
+  for(let i=0;i<rows.length;i++){
+    const r=rows[i];
+    if(!r||r.length===0) continue;
+    const a=r[0], b=r[1], c=r[2], d=r[3], e=r[4], f=r[5], g=r[6], h=r[7], j=r[9], l=r[11], m=r[12], n=r[13];
+    // Section header detection: Col A has text, Col B is null/empty, Col D-I have numeric, or Col A has text matching a section pattern
+    const isSectionHeader=(
+      (typeof a==='string'&&a.length>0) &&
+      (b===null||b===undefined||b===''||(typeof b==='string'&&b.trim()==='')) &&
+      (d!==null&&d!==undefined&&typeof d==='number'&&d>0)
+    );
+    // Data row detection: Col B has text
+    const isDataRow=(typeof b==='string'&&b.trim().length>0);
+    // Section name row: Col A has "基准"
+    const isBaseRow=(typeof a==='string'&&a.includes('基准'));
+
+    if(isBaseRow){
+      continue; // skip "基准" row, already captured in section header
+    }
+
+    if(isSectionHeader){
+      const secName=String(a).trim();
+      const baseC=(c!==null&&c!==undefined)?Number(c):0;
+      const baseD=(d!==null&&d!==undefined)?Number(d):0;
+      const baseE=(e!==null&&e!==undefined)?Number(e):0;
+      const baseF=(f!==null&&f!==undefined)?Number(f):0;
+      const baseG=(g!==null&&g!==undefined)?Number(g):0;
+      const baseH=(h!==null&&h!==undefined)?Number(h):0;
+      const skuC=skuMap[baseC]||'';
+      const skuD=skuMap[baseD]||'';
+      const skuE=skuMap[baseE]||'';
+      const skuF=skuMap[baseF]||'';
+      const skuG=skuMap[baseG]||'';
+      const skuH=skuMap[baseH]||'';
+      currentSection={name:secName,base:{C:baseC,D:baseD,E:baseE,F:baseF,G:baseG,H:baseH,skuC,skuD,skuE,skuF,skuG,skuH},packages:[]};
+      sections.push(currentSection);
+      continue;
+    }
+
+    if(isDataRow&&currentSection){
+      const name=String(b).trim();
+      const dur=(a!==null&&a!==undefined)?Number(a):365;
+      const C=(c!==null&&c!==undefined)?Number(c):1;
+      const D=(d!==null&&d!==undefined)?Number(d):0;
+      const E=(e!==null&&e!==undefined)?Number(e):0;
+      const F=(f!==null&&f!==undefined)?Number(f):0;
+      const G=(g!==null&&g!==undefined)?Number(g):0;
+      const H=(h!==null&&h!==undefined)?Number(h):0;
+      const Jval=(j!==null&&j!==undefined)?Number(j):null;
+      const Lval=(l!==null&&l!==undefined)?String(l).trim():'无';
+      const Mval=(m!==null&&m!==undefined)?Number(m):null;
+      const Nval=(n!==null&&n!==undefined)?String(n).trim():'';
+      const productName=String(r[14]||'').trim()||'';
+      currentSection.packages.push({
+        name,dur,C,D,E,F,G,H,J:Jval,L:Lval,M:Mval,N:Nval,productName
+      });
+    }
+  }
+  return {sections};
+}
+
+function updateSkuFromSheet(ws){
+  try {
+    const rows=XLSX.utils.sheet_to_json(ws,{header:1,defval:null});
+    // Find SKU data rows (columns: skuNo, skuFullName, productType, days, listPrice)
+    const newSkus=[];
+    for(let i=1;i<rows.length;i++){
+      const r=rows[i];
+      if(!r||r.length<5) continue;
+      const skuNo=String(r[0]||'').trim();
+      if(!skuNo||!skuNo.match(/^(58_|GJ_)/)) continue;
+      const skuFullName=String(r[1]||'').trim();
+      const productType=String(r[2]||'').trim();
+      const days=Number(r[3])||0;
+      const listPrice=Number(r[4])||0;
+      newSkus.push({skuNo,skuFullName,productType,days,listPrice,valid:1});
+    }
+    if(newSkus.length>0){
+      // Merge: keep existing skus not in new list, update matching ones
+      const existingMap={};
+      skuData.forEach(s=>{ existingMap[s.skuNo]=s; });
+      newSkus.forEach(ns=>{
+        if(existingMap[ns.skuNo]){
+          Object.assign(existingMap[ns.skuNo],ns);
+          delete existingMap[ns.skuNo]._isNew;
+        } else {
+          skuData.push(ns);
+        }
+      });
+    }
+  } catch(e){ console.warn('SKU sheet parse warning:',e); }
+}
+
+init();
+</script>
+<!-- Compare Selection Modal -->
+<div class="modal-overlay" id="compareModal" style="display:none;">
+  <div class="modal" style="max-width:900px;">
+    <div class="modal-header"><h3>组合包对比选择</h3><button class="btn btn-outline btn-sm" onclick="closeModal('compareModal')">×</button></div>
+    <div class="modal-body">
+      <p style="font-size:12px;color:#999;margin-bottom:12px;">选择基准组合包（新修改/新增的会自动勾选），再选择需要对比的组合包（可多选）</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+        <div>
+          <h4 style="font-size:13px;color:var(--primary);margin-bottom:8px;">基准组合包（新增/修改的）</h4>
+          <div id="compareBaseList" style="max-height:320px;overflow-y:auto;border:1px solid var(--border);border-radius:6px;padding:8px;background:#fafafa;"></div>
+        </div>
+        <div>
+          <h4 style="font-size:13px;color:var(--warning);margin-bottom:8px;">对比组合包（可多选）</h4>
+          <div id="compareTargetList" style="max-height:320px;overflow-y:auto;border:1px solid var(--border);border-radius:6px;padding:8px;background:#fafafa;"></div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer" id="compareModalFooter">
+      <button class="btn btn-outline" onclick="closeModal('compareModal')">取消</button>
+      <button class="btn btn-danger-outline" onclick="doAdvantageAnalysis()">对比优势分析</button>
+    </div>
+  </div>
+</div>
+
+<!-- Compare Result Modal -->
+<div class="modal-overlay" id="compareResultModal" style="display:none;">
+  <div class="modal" style="max-width:1100px;">
+    <div class="modal-header"><h3 id="compareResultTitle">组合包对比结果</h3><button class="btn btn-outline btn-sm" onclick="closeModal('compareResultModal')">×</button></div>
+    <div class="modal-body" id="compareResultContent"></div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('compareResultModal')">关闭</button>
+    </div>
+  </div>
+</div>
+
+<!-- Disclosure Modal -->
+<div class="modal-overlay" id="disclosureModal" style="display:none;">
+  <div class="modal" style="max-width:1050px;">
+    <div class="modal-header"><h3>刊例价披露表</h3><button class="btn btn-outline btn-sm" onclick="closeModal('disclosureModal')">×</button></div>
+    <div style="padding:6px 16px;display:flex;align-items:center;gap:8px;border-bottom:1px solid #f0f0f0;">
+      <span style="font-size:11px;color:#666;white-space:nowrap;">商品名称筛选：</span>
+      <div id="disclosureFilterWrap" style="position:relative;display:inline-block;min-width:180px;">
+        <button id="disclosureFilterBtn" onclick="toggleDisclosureFilterDropdown(event)" style="width:100%;padding:4px 10px;border:1px solid var(--border);border-radius:4px;font-size:11px;background:#fff;cursor:pointer;text-align:left;display:flex;align-items:center;justify-content:space-between;gap:6px;">
+          <span id="disclosureFilterLabel">全部商品名称</span>
+          <span style="font-size:9px;color:#999;">▼</span>
+        </button>
+        <div id="disclosureFilterDropdown" style="display:none;position:absolute;top:100%;left:0;z-index:1001;background:#fff;border:1px solid var(--border);border-radius:4px;box-shadow:0 4px 12px rgba(0,0,0,0.12);min-width:260px;max-height:360px;overflow:hidden;margin-top:2px;">
+          <div style="padding:6px 8px;border-bottom:1px solid #eee;">
+            <input id="disclosureFilterSearch" type="text" placeholder="输入关键词筛选..." oninput="filterDisclosureOptions()" style="width:100%;padding:4px 6px;border:1px solid #e8e8e8;border-radius:3px;font-size:11px;box-sizing:border-box;">
+          </div>
+          <div style="padding:4px 8px;border-bottom:1px solid #eee;display:flex;gap:8px;">
+            <button type="button" onclick="selectAllDisclosureNames()" style="padding:0;border:none;background:none;font-size:10px;color:var(--primary);cursor:pointer;">全选</button>
+            <button type="button" onclick="deselectAllDisclosureNames()" style="padding:0;border:none;background:none;font-size:10px;color:#999;cursor:pointer;">取消全选</button>
+          </div>
+          <div id="disclosureFilterOptions" style="max-height:220px;overflow-y:auto;padding:2px 4px;"></div>
+          <div style="padding:6px 8px;border-top:1px solid #eee;display:flex;gap:6px;justify-content:flex-end;">
+            <button onclick="cancelDisclosureFilter()" style="padding:4px 14px;border:1px solid #d9d9d9;border-radius:4px;background:#fff;font-size:11px;cursor:pointer;color:#666;">取消</button>
+            <button onclick="confirmDisclosureFilter()" style="padding:4px 14px;border:none;border-radius:4px;background:var(--primary);font-size:11px;cursor:pointer;color:#fff;">确定</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-body" style="overflow-x:auto;" id="disclosureContent"></div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('disclosureModal')">关闭</button>
+      <button class="btn btn-disclosure" onclick="exportDisclosure()">导出CSV</button>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
