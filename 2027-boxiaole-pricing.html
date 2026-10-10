@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2027年 伯小乐·职小乐 定价订单页</title>
+<style>
+:root{--accent:#ea580c;--accent-soft:#fff7ed;--bg:#f5f6f8;--card:#fff;--ink:#18181b;--muted:#71717a;--serif:"Songti SC","STSong","SimSun",serif;--radius:18px;--peak:#dc2626;--peak-soft:#fef2f2;--peak-border:#fecaca;--off:#2563eb;--off-soft:#eff6ff;--off-border:#bfdbfe}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue",sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
+
+/* Hero */
+.hero{text-align:center;padding:55px 20px 25px;background:radial-gradient(120% 120% at 50% -10%,var(--accent-soft) 0%,transparent 55%),linear-gradient(180deg,#fff 0%,var(--bg) 100%);transition:background .4s}
+.hero-badge{display:inline-block;padding:5px 14px;border:1px solid var(--accent);border-radius:999px;font-size:12px;font-weight:600;color:var(--accent);margin-bottom:14px;letter-spacing:.5px}
+.hero h1{font-family:var(--serif);font-size:36px;margin-bottom:8px}
+.hero p{color:var(--muted);max-width:640px;margin:0 auto;font-size:15px}
+
+/* Season Toggle */
+.season-toggle{display:flex;justify-content:center;align-items:center;gap:0;margin:20px auto 6px;width:fit-content;background:#fff;border-radius:999px;padding:4px;box-shadow:0 4px 14px rgba(0,0,0,.06)}
+.season-btn{padding:10px 28px;border:none;border-radius:999px;cursor:pointer;font-weight:700;font-size:14px;transition:all .25s;display:flex;align-items:center;gap:6px}
+.season-btn.peak{color:#99451a}
+.season-btn.off{color:#1e40af}
+.season-btn.peak.active{background:linear-gradient(135deg,#fef2f2,#fee2e2);color:var(--peak);box-shadow:0 2px 8px rgba(220,38,38,.15)}
+.season-btn.off.active{background:linear-gradient(135deg,#eff6ff,#dbeafe);color:var(--off);box-shadow:0 2px 8px rgba(37,99,235,.15)}
+.season-icon{font-size:18px}
+.season-desc{text-align:center;font-size:12px;color:var(--muted);margin-bottom:10px}
+.season-desc .peak-label{color:var(--peak);font-weight:600}
+.season-desc .off-label{color:var(--off);font-weight:600}
+
+/* Tabs */
+.tabs-container{display:flex;justify-content:center;gap:4px;padding:5px;background:#fff;border-radius:999px;width:fit-content;margin:16px auto;box-shadow:0 4px 12px rgba(0,0,0,.05)}
+.tab-btn{padding:10px 24px;border:none;border-radius:999px;cursor:pointer;font-weight:600;font-size:14px;color:var(--muted);background:transparent;transition:all .2s}
+.tab-btn.active{background:var(--ink);color:#fff}
+.tab-btn:hover:not(.active){background:#f0f0f2}
+
+/* View Toggle */
+.view-toggle{display:flex;justify-content:center;gap:8px;max-width:1200px;margin:0 auto 18px;padding:0 20px;font-size:13px}
+.view-toggle button{padding:6px 16px;border:1px solid #ddd;border-radius:8px;background:#fff;cursor:pointer;font-size:13px;color:var(--muted);transition:all .2s}
+.view-toggle button.active{border-color:var(--ink);color:var(--ink);font-weight:600}
+
+/* Cards */
+.cards-view{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;max-width:1200px;margin:0 auto;padding:0 20px 40px}
+.cards-view.four-col{grid-template-columns:repeat(4,1fr);gap:14px}
+.cards-view.three-col{grid-template-columns:repeat(3,1fr);gap:16px}
+.plan-card{background:var(--card);border-radius:var(--radius);padding:18px;box-shadow:0 4px 20px rgba(0,0,0,.04);border:2px solid #ececef;transition:transform .2s,box-shadow .2s,border-color .3s;position:relative;overflow:hidden}
+.four-col .plan-card{padding:15px}
+.plan-card:hover{transform:translateY(-4px);box-shadow:0 8px 30px rgba(0,0,0,.08)}
+.plan-card.featured{border-color:var(--accent);box-shadow:0 4px 24px rgba(234,88,12,.12)}
+.plan-card.featured::before{content:"推荐";position:absolute;top:14px;right:-28px;background:var(--accent);color:#fff;font-size:11px;font-weight:700;padding:2px 32px;transform:rotate(45deg)}
+.card-tag{display:inline-block;padding:2px 8px;border-radius:6px;font-size:10px;font-weight:600;margin-bottom:6px}
+.four-col .card-tag{font-size:9px;padding:1px 6px}
+.tag-custom{background:#f0f0f2;color:#555}
+.tag-bundle{background:var(--accent-soft);color:var(--accent)}
+.card-title{font-family:var(--serif);font-size:15px;font-weight:700;margin-bottom:4px}
+.four-col .card-title{font-size:14px;margin-bottom:3px}
+
+/* Price Block with Season */
+.price-block{margin:8px 0 6px;position:relative}
+.price-main{font-size:28px;font-weight:800;color:var(--ink);transition:all .3s}
+.four-col .price-main{font-size:24px}
+.price-main .currency{font-size:16px;font-weight:600;vertical-align:top;margin-right:2px}
+.four-col .price-main .currency{font-size:14px}
+.price-main .period{font-size:12px;color:var(--muted);font-weight:400;margin-left:3px}
+.four-col .price-main .period{font-size:11px}
+.price-season{display:inline-block;padding:2px 8px;border-radius:6px;font-size:11px;font-weight:700;margin-left:6px;vertical-align:middle}
+.price-season.peak-tag{background:#fef2f2;color:var(--peak);border:1px solid var(--peak-border)}
+.price-season.off-tag{background:#eff6ff;color:var(--off);border:1px solid var(--off-border)}
+.price-alt{font-size:12px;color:var(--muted);margin-top:3px;display:flex;align-items:center;gap:5px}
+.four-col .price-alt{font-size:10px}
+.price-alt .strike{text-decoration:line-through;color:#bbb}
+.price-alt .save{background:#ecfdf5;color:#059669;padding:1px 6px;border-radius:4px;font-weight:600;font-size:10px}
+.four-col .price-alt .save{font-size:9px;padding:0 4px}
+.price-daily{font-size:11px;color:var(--muted);margin-top:2px}
+.four-col .price-daily{font-size:10px}
+.price-formula{font-size:10px;color:#a1a1aa;margin-top:3px;font-family:"SF Mono","Fira Code",monospace;background:#fafafa;padding:3px 6px;border-radius:6px;word-break:break-all;display:none}
+.four-col .price-formula{font-size:9px}
+.show-formula .price-formula{display:block}
+
+.card-subtitle{font-size:12px;color:var(--accent);font-weight:600;margin-bottom:3px}
+.four-col .card-subtitle{font-size:11px}
+.card-customer{font-size:11px;color:var(--muted);margin-bottom:8px;padding-bottom:8px;border-bottom:1px solid #f0f0f2}
+.four-col .card-customer{font-size:10px;margin-bottom:6px;padding-bottom:6px}
+.card-features{list-style:none}
+.card-features li{padding:5px 0;font-size:12px;color:#444;border-bottom:1px solid #f7f7f9;display:flex;align-items:flex-start;gap:5px}
+.four-col .card-features li{padding:4px 0;font-size:11px;gap:4px}
+.card-features li:last-child{border-bottom:none}
+.card-features .icon{flex-shrink:0;width:16px;text-align:center;font-size:12px}
+.four-col .card-features .icon{width:14px;font-size:11px}
+.card-bonus{margin-top:8px;padding:7px;background:#fefce8;border-radius:10px;font-size:11px;color:#924512}
+.four-col .card-bonus{margin-top:6px;padding:5px;font-size:10px;border-radius:8px}
+.card-bonus strong{color:#b45309}
+.red-bold{color:#ff0000!important;font-weight:700!important}
+
+/* In-card season compare */
+.season-compare-in{margin-top:8px;padding:8px;background:linear-gradient(135deg,#fef2f2 0%,#eff6ff 100%);border-radius:10px;text-align:center;border:1px solid #f0f0f2}
+.four-col .season-compare-in{margin-top:6px;padding:6px;border-radius:8px}
+.season-compare-in .sc-row{display:flex;justify-content:center;align-items:center;gap:6px;font-size:13px;font-weight:700}
+.four-col .season-compare-in .sc-row{font-size:12px;gap:4px}
+.season-compare-in .sc-peak{color:var(--peak)}
+.season-compare-in .sc-arrow{color:#ccc;font-size:14px}
+.four-col .season-compare-in .sc-arrow{font-size:12px}
+.season-compare-in .sc-off{color:var(--off)}
+.season-compare-in .sc-save{font-size:11px;color:#059669;margin-top:3px;font-weight:600}
+.four-col .season-compare-in .sc-save{font-size:9px;margin-top:2px}
+.season-compare-in .sc-same{font-size:11px;color:#999;margin-top:3px}
+.four-col .season-compare-in .sc-same{font-size:9px}
+
+/* Seasonal price change animation */
+.price-peak{color:var(--peak)}
+.price-off{color:var(--off)}
+
+/* Season diff badge on card */
+.season-diff{position:absolute;top:12px;left:12px;padding:3px 8px;border-radius:6px;font-size:10px;font-weight:700;display:none}
+.has-season .season-diff{display:inline-block}
+.season-diff.peak-mode{background:#fef2f2;color:var(--peak)}
+.season-diff.off-mode{background:#eff6ff;color:var(--off)}
+
+/* In-card season toggle */
+.card-season-toggle{position:absolute;top:12px;right:12px;display:flex;gap:0;background:#f0f0f2;border-radius:999px;padding:2px;z-index:2}
+.card-season-btn{padding:3px 8px;border:none;border-radius:999px;cursor:pointer;font-size:10px;font-weight:600;transition:all .2s;background:transparent}
+.card-season-btn.peak{color:#99451a}
+.card-season-btn.off{color:#1e40af}
+.card-season-btn.peak.active{background:#fee2e2;color:var(--peak)}
+.card-season-btn.off.active{background:#dbeafe;color:var(--off)}
+.four-col .card-season-toggle{top:8px;right:8px}
+.four-col .card-season-btn{padding:2px 6px;font-size:9px}
+
+/* Table */
+.table-section{display:none;max-width:1200px;margin:0 auto;padding:0 20px 40px}
+.table-section.active{display:block}
+.table-title{font-family:var(--serif);font-size:19px;font-weight:700;margin-bottom:14px;padding-left:4px;display:flex;align-items:center;gap:8px}
+.compare-table{width:100%;border-collapse:separate;border-spacing:0;background:var(--card);border-radius:var(--radius);overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,.04)}
+.compare-table th,.compare-table td{padding:11px 12px;text-align:center;border-bottom:1px solid #f0f0f2;font-size:13px}
+.compare-table thead th{background:#fafafb;font-weight:700;font-size:13px;color:var(--ink);position:sticky;top:0}
+.compare-table thead th:first-child{text-align:left}
+.compare-table tbody td:first-child{text-align:left;font-weight:600;color:var(--ink);background:#fcfcfd;white-space:nowrap}
+.compare-table tr:last-child td{border-bottom:none}
+.compare-table .section-header td{background:var(--accent-soft);font-weight:700;color:var(--accent);font-size:13px;text-align:left;padding:10px 14px}
+.compare-table .highlight-peak{background:#fef2f2}
+.compare-table .highlight-off{background:#eff6ff}
+.compare-table .price-row td{font-weight:700;font-size:14px}
+.compare-table .season-row td{font-weight:700;transition:background .3s,color .3s}
+.compare-table .formula-cell{font-size:11px;color:#a1a1aa;font-family:"SF Mono","Fira Code",monospace}
+.effect-table{margin-top:28px}
+.effect-note{font-size:12px;color:var(--muted);margin-top:10px;padding-left:4px;font-style:italic}
+
+/* Season comparison mini-table */
+.season-compare{margin:16px auto 0;max-width:1200px;padding:0 20px}
+.sc-title{font-size:14px;font-weight:700;margin-bottom:10px;color:var(--ink)}
+.sc-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+.sc-item{background:#fff;border-radius:14px;padding:14px;border:1px solid #eee;text-align:center}
+.sc-item .sc-name{font-size:13px;font-weight:700;margin-bottom:8px}
+.sc-item .sc-prices{display:flex;justify-content:center;align-items:center;gap:8px}
+.sc-item .sc-peak{color:var(--peak);font-weight:800;font-size:18px}
+.sc-item .sc-arrow{color:#ccc;font-size:16px}
+.sc-item .sc-off{color:var(--off);font-weight:800;font-size:18px}
+.sc-item .sc-save{font-size:11px;color:#059669;margin-top:4px;font-weight:600}
+
+/* Diff section */
+.diff-section{display:none;max-width:1200px;margin:0 auto;padding:0 20px 40px}
+.diff-section.active{display:block}
+.diff-product{margin-bottom:28px}
+.diff-product-header{display:flex;align-items:center;gap:10px;margin-bottom:14px;padding-bottom:10px;border-bottom:2px solid var(--accent)}
+.diff-product-header h3{font-family:var(--serif);font-size:18px;font-weight:700}
+.diff-product-header .diff-badge{display:inline-block;padding:3px 10px;border-radius:8px;font-size:11px;font-weight:700;color:#fff}
+.diff-badge-up{background:#ea580c}
+.diff-badge-down{background:#dc2626}
+.diff-badge-same{background:#16a34a}
+.diff-cards{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.diff-cards.five-col{grid-template-columns:repeat(5,1fr)}
+.diff-card{background:#fff;border-radius:14px;padding:14px;border:1px solid #eee;position:relative;transition:transform .2s,box-shadow .2s}
+.diff-card:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.06)}
+.diff-card-tag{display:inline-block;padding:2px 7px;border-radius:6px;font-size:10px;font-weight:700;margin-bottom:6px}
+.diff-tag-price{background:#fef2f2;color:#dc2626}
+.diff-tag-upgrade{background:#eff6ff;color:#2563eb}
+.diff-tag-new{background:#f0fdf4;color:#16a34a}
+.diff-tag-drop{background:#fefce8;color:#b45309}
+.diff-card-title{font-size:13px;font-weight:700;margin-bottom:5px;color:var(--ink);line-height:1.4}
+.diff-card-body{font-size:12px;color:#444;line-height:1.6}
+.diff-arrow{display:inline-block;color:var(--accent);font-weight:700;margin:0 4px}
+.diff-highlight{background:#fef2f2;padding:1px 5px;border-radius:4px;color:#dc2626;font-weight:600;font-size:12px}
+.diff-highlight-green{background:#ecfdf5;padding:1px 5px;border-radius:4px;color:#059669;font-weight:600;font-size:12px}
+.diff-summary{margin-top:10px;padding:10px 14px;background:linear-gradient(135deg,#fff7ed,#fef2f2);border-radius:10px;font-size:12px;color:#666;border:1px solid #f0e6dc}
+.diff-summary strong{color:var(--ink)}
+
+/* Responsive */
+@media(max-width:768px){
+  .hero h1{font-size:26px}
+  .cards-view{grid-template-columns:1fr}
+  .compare-table{font-size:12px}
+  .compare-table th,.compare-table td{padding:8px 5px}
+  .tabs-container{flex-wrap:wrap;border-radius:16px}
+  .season-toggle{flex-direction:row}
+  .season-btn{padding:8px 18px;font-size:13px}
+  .diff-cards{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:480px){
+  .diff-cards{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<section class="hero" id="hero">
+  <span class="hero-badge" id="heroBadge">58全网招 · 伯小乐</span>
+  <h1 id="heroTitle">2027年 产品定价总览</h1>
+  <p id="heroSub">伯小乐 · 职小乐 · 赶集伯小乐 三大产品线，新增淡旺季定价机制</p>
+</section>
+
+<!-- Season Toggle -->
+<div class="season-toggle">
+  <button class="season-btn peak active" onclick="setSeason('peak')"><span class="season-icon">☀️</span> 旺季价格</button>
+  <button class="season-btn off" onclick="setSeason('off')"><span class="season-icon">❄️</span> 淡季价格</button>
+</div>
+<div class="season-desc">
+  <span class="peak-label">☀️ 旺季 = 刊例价</span> &nbsp;vs&nbsp; <span class="off-label">❄️ 淡季 = 折扣价（New!）</span>
+</div>
+
+<!-- Tabs -->
+<nav class="tabs-container">
+  <button class="tab-btn active" data-tab="boxiaole">58伯小乐</button>
+  <button class="tab-btn" data-tab="zhixiaole">职小乐</button>
+  <button class="tab-btn" data-tab="ganji">赶集伯小乐</button>
+  <button class="tab-btn" data-tab="diff">与26年对比</button>
+</nav>
+
+<div class="view-toggle">
+  <button class="active" id="btnCards" onclick="switchView('cards')">卡片视图</button>
+  <button id="btnTable" onclick="switchView('table')">表格视图</button>
+  <button id="btnFormula" onclick="toggleFormula()">公式</button>
+</div>
+
+<!-- ==================== 58伯小乐 27年 (V4) ==================== -->
+<div class="cards-view four-col" id="cards-boxiaole">
+  <!-- 季度版 -->
+  <div class="plan-card has-season">
+    <span class="card-tag tag-custom">定制/框架自选</span>
+    <div class="card-title">季度版</div>
+    <div class="card-season-toggle" data-peak="2,300" data-off="1,800">
+      <button class="card-season-btn peak active" onclick="setSeason('peak')">☀️ 旺</button>
+      <button class="card-season-btn off" onclick="setSeason('off')">❄️ 淡</button>
+    </div>
+    <div class="price-block">
+      <div class="price-main"><span class="currency">¥</span><span class="price-val" data-peak="2,300" data-off="1,800">2,300</span><span class="period">季⭐</span><span class="price-season peak-tag">旺季</span></div>
+      <div class="price-alt"><span class="strike peak-price">旺季 ¥2,300</span> <span class="save">淡季省¥500</span></div>
+      <div class="price-daily">日均 <span class="daily-val" data-peak="25" data-off="≈19.6">¥25</span></div>
+      <div class="price-daily">日均/职位 <span class="daily-val" data-peak="0.83" data-off="0.65">¥0.83</span></div>
+      <div class="price-formula">旺季 2300≈1×200+30×66+1×100 =2280</div>
+    </div>
+    <div class="season-compare-in"><div class="sc-row"><span class="sc-peak">¥2,300</span><span class="sc-arrow">→</span><span class="sc-off">¥1,800</span></div><div class="sc-save">淡季省 22%</div></div>
+    <div class="card-subtitle">同时在线30个职位</div>
+    <div class="card-customer">客户需求：淡旺季用 ｜ 典型客户：直招 + 营销类</div>
+    <ul class="card-features">
+      <li><span class="icon">📌</span>劲爆职位（全容器！）：30个 × 92天</li>
+      <li><span class="icon">💬</span>主动开聊：100人/日 × 92天</li>
+      <li><span class="icon">📂</span>类目：不限类</li>
+      <li><span class="icon">🎁</span>增值产品：无</li>
+      <li><span class="icon">📋</span>叠加上限：3个，固定时长</li>
+    </ul>
+    <div class="card-bonus"><strong>赠送权益：</strong>92天 / 15个 / 30天 / uid</div>
+  </div>
+  <!-- 年度版go -->
+  <div class="plan-card featured has-season">
+    <span class="card-tag tag-bundle">套餐打包&定制/框架自选</span>
+    <div class="card-title">年度版 go</div>
+    <div class="card-season-toggle" data-peak="2,300" data-off="2,300">
+      <button class="card-season-btn peak active" onclick="setSeason('peak')">☀️ 旺</button>
+      <button class="card-season-btn off" onclick="setSeason('off')">❄️ 淡</button>
+    </div>
+    <div class="price-block">
+      <div class="price-main"><span class="currency">¥</span><span class="price-val" data-peak="2,300" data-off="2,300">2,300</span><span class="period">+500招聘币 年⭐涨价</span></div>
+      <div class="price-alt"><span class="save" style="color:#059669">淡旺季同价</span></div>
+      <div class="price-daily">日均 <span class="daily-val" data-peak="≈6.3" data-off="≈6.3">¥6.3</span></div>
+      <div class="price-daily">日均/职位 <span class="daily-val" data-peak="0.79" data-off="0.79">¥0.79</span></div>
+      <div class="price-formula">旺季 2300≈1×500+8×188←560+1×300 =2304</div>
+    </div>
+    <div class="season-compare-in"><div class="sc-row"><span class="sc-peak">¥2,300</span><span class="sc-arrow">=</span><span class="sc-off">¥2,300</span></div><div class="sc-same">淡旺季无差异</div></div>
+    <div class="card-subtitle">招聘需求多变</div>
+    <div class="card-customer">客户需求：增补招聘 ｜ 典型客户：直招 + 营销类</div>
+    <ul class="card-features">
+      <li><span class="icon">📦</span><span class="red-bold">劲爆职位（全容器！）：8个 × 365天</span></li>
+      <li><span class="icon">💬</span>主动开聊：100人/日 × 365天</li>
+      <li><span class="icon">📂</span>类目：不限类</li>
+      <li><span class="icon">🎁</span>增值产品：500招聘币</li>
+      <li><span class="icon">📋</span>叠加上限：3个，固定时长</li>
+    </ul>
+    <div class="card-bonus"><strong>赠送权益：</strong>92天 / 15个 / 30天 / uid</div>
+  </div>
+  <!-- 年度版plus -->
+  <div class="plan-card has-season">
+    <span class="card-tag tag-custom">定制/框架自选</span>
+    <div class="card-title">年度版 plus</div>
+    <div class="card-season-toggle" data-peak="3,600" data-off="3,600">
+      <button class="card-season-btn peak active" onclick="setSeason('peak')">☀️ 旺</button>
+      <button class="card-season-btn off" onclick="setSeason('off')">❄️ 淡</button>
+    </div>
+    <div class="price-block">
+      <div class="price-main"><span class="currency">¥</span><span class="price-val" data-peak="3,600" data-off="3,600">3,600</span><span class="period">年</span></div>
+      <div class="price-alt"><span class="save" style="color:#059669">淡旺季同价</span></div>
+      <div class="price-daily">日均 <span class="daily-val" data-peak="≈10" data-off="≈10">¥10</span></div>
+      <div class="price-daily">日均/职位 <span class="daily-val" data-peak="0.67" data-off="0.67">¥0.67</span></div>
+      <div class="price-formula">旺季 3600≈1×500+15×188←560+1×300 =3620</div>
+    </div>
+    <div class="season-compare-in"><div class="sc-row"><span class="sc-peak">¥3,600</span><span class="sc-arrow">=</span><span class="sc-off">¥3,600</span></div><div class="sc-same">淡旺季无差异</div></div>
+    <div class="card-subtitle">招聘需求多变</div>
+    <div class="card-customer">客户需求：多城多岗 ｜ 典型客户：直招 + 营销类</div>
+    <ul class="card-features">
+      <li><span class="icon">📦</span><span class="red-bold">劲爆职位（全容器！）：15个 × 365天（+7个）</span></li>
+      <li><span class="icon red-bold">📦</span><span class="red-bold">劲爆同城多地址：有</span></li>
+      <li><span class="icon">💬</span>主动开聊：100人/日 × 365天</li>
+      <li><span class="icon">📂</span>类目：不限类</li>
+      <li><span class="icon">🎁</span>增值产品：无</li>
+      <li><span class="icon">📋</span>叠加上限：3个，框架折价，定制固定时长</li>
+    </ul>
+    <div class="card-bonus"><strong>赠送权益：</strong>92天 / 15个 / 30天 / uid</div>
+  </div>
+  <!-- 年度版pro -->
+  <div class="plan-card has-season">
+    <span class="card-tag tag-custom">定制/框架自选</span>
+    <div class="card-title">年度版 pro</div>
+    <div class="card-season-toggle" data-peak="6,000" data-off="6,000">
+      <button class="card-season-btn peak active" onclick="setSeason('peak')">☀️ 旺</button>
+      <button class="card-season-btn off" onclick="setSeason('off')">❄️ 淡</button>
+    </div>
+    <div class="price-block">
+      <div class="price-main"><span class="currency">¥</span><span class="price-val" data-peak="6,000" data-off="6,000">6,000</span><span class="period">年</span></div>
+      <div class="price-alt"><span class="save" style="color:#059669">淡旺季同价</span></div>
+      <div class="price-daily">日均 <span class="daily-val" data-peak="≈16" data-off="≈16">¥16</span></div>
+      <div class="price-daily">日均/职位 <span class="daily-val" data-peak="1.07" data-off="1.07">¥1.07</span></div>
+      <div class="price-formula">旺季 6000≈1×500+15×188←560+1×300+1×2400 =6020</div>
+    </div>
+    <div class="season-compare-in"><div class="sc-row"><span class="sc-peak">¥6,000</span><span class="sc-arrow">=</span><span class="sc-off">¥6,000</span></div><div class="sc-same">淡旺季无差异</div></div>
+    <div class="card-subtitle">曝光效果加持</div>
+    <div class="card-customer">客户需求：多城多岗 ｜ 典型客户：直招 + 营销类</div>
+    <ul class="card-features">
+      <li><span class="icon">📦</span><span class="red-bold">劲爆职位（全容器！）：15个 × 365天（+7个）</span></li>
+      <li><span class="icon red-bold">📦</span><span class="red-bold">劲爆同城多地址：有</span></li>
+      <li><span class="icon">💬</span>主动开聊：100人/日 × 365天</li>
+      <li><span class="icon">📂</span>类目：不限类</li>
+      <li><span class="icon">🎁</span>增值产品：12张7天超级置顶曝光 / 30天 / 1个职位</li>
+      <li><span class="icon">📋</span>叠加上限：3个，框架折价，定制固定时长</li>
+    </ul>
+    <div class="card-bonus"><strong>赠送权益：</strong>92天 / 15个 / 30天 / uid</div>
+  </div>
+</div>
+
+<!-- 伯小乐 27年 Table (V4) -->
+<div class="table-section" id="table-boxiaole">
+  <div class="table-title">58伯小乐 · 权益详情对比</div>
+  <table class="compare-table">
+    <thead>
+      <tr><th>对比项</th><th>季度版</th><th>年度版go</th><th>年度版plus</th><th>年度版pro</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>类型</td><td>定制/框架自选</td><td>套餐打包&定制/框架自选</td><td>定制/框架自选</td><td>定制/框架自选</td></tr>
+      <tr class="price-row"><td>定价</td><td>¥2,300 季⭐</td><td>¥2,300+500招聘币 年⭐涨价</td><td>¥3,600 年</td><td>¥6,000 年</td></tr>
+      <tr><td>时长</td><td>92天</td><td>365天</td><td>365天</td><td>365天</td></tr>
+      <tr><td>日均成本</td><td>¥25</td><td>¥6.3</td><td>¥10</td><td>¥16</td></tr>
+      <tr><td>日均成本/职位</td><td>¥0.83</td><td>¥0.79</td><td>¥0.67</td><td>¥1.07</td></tr>
+      <tr><td>核心卖点</td><td>同时在线30个职位</td><td>招聘需求多变</td><td>招聘需求多变</td><td>招聘需求多变</td></tr>
+      <tr><td>客户需求</td><td>淡旺季用</td><td>增补招聘</td><td>多城多岗</td><td>多城多岗</td></tr>
+      <tr><td>典型客户</td><td>直招 + 营销类</td><td>直招 + 营销类</td><td>直招 + 营销类</td><td>直招 + 营销类</td></tr>
+      <tr><td colspan="5" class="section-header">▎ 权益详情</td></tr>
+      <tr><td>劲爆职位（全容器！）</td><td>📌 30个 × 92天</td><td class="red-bold">📦 8个 × 365天</td><td class="red-bold">📦 15个 × 365天（+7个）</td><td class="red-bold">📦 15个 × 365天（+7个）</td></tr>
+      <tr><td>劲爆同城多地址</td><td>无</td><td class="red-bold">有</td><td class="red-bold">有</td><td class="red-bold">有</td></tr>
+      <tr><td>主动开聊</td><td>100人/日 × 92天</td><td>100人/日 × 365天</td><td>100人/日 × 365天</td><td>100人/日 × 365天</td></tr>
+      <tr><td>类目</td><td>不限类</td><td>不限类</td><td>不限类</td><td>不限类</td></tr>
+      <tr><td>增值产品</td><td>无</td><td>500招聘币</td><td>无</td><td>12张7天超级置顶曝光 / 30天 / 1个职位</td></tr>
+      <tr class="season-row highlight-peak" data-season="peak"><td>刊例价（旺季）</td><td class="formula-cell">2300≈1×200+30×66+1×100 =2280</td><td class="formula-cell">2300≈1×500+8×188←560+1×300 =2304</td><td class="formula-cell">3600≈1×500+15×188←560+1×300 =3620</td><td class="formula-cell">6000≈1×500+15×188←560+1×300+1×2400 =6020</td></tr>
+      <tr class="season-row highlight-off" data-season="off"><td class="red-bold">折扣价（淡季 new）</td><td style="color:var(--off);font-weight:800" class="red-bold">¥1,800</td><td class="red-bold">¥2,300</td><td class="red-bold">¥3,600</td><td class="red-bold">¥6,000</td></tr>
+      <tr><td>叠加上限</td><td>3个，固定时长</td><td>3个，固定时长</td><td>3个，框架折价，定制固定时长</td><td>3个，框架折价，定制固定时长</td></tr>
+      <tr><td>赠送权益</td><td>92天 / 15个 / 30天 / uid</td><td>92天 / 15个 / 30天 / uid</td><td>92天 / 15个 / 30天 / uid</td><td>92天 / 15个 / 30天 / uid</td></tr>
+    </tbody>
+  </table>
+
+  <div class="effect-table">
+    <div class="table-title">▎ 效果权益 · 哪个版本更适合你的客户</div>
+    <table class="compare-table">
+      <thead>
+        <tr><th>对比项</th><th>季度版</th><th>年度版go</th><th>年度版plus⭐</th><th>年度版pro</th></tr>
+      </thead>
+      <tbody>
+        <tr class="price-row"><td>定价</td><td>¥2,300 季</td><td>¥2,300 年</td><td>¥3,600 年</td><td>¥6,000 年</td></tr>
+        <tr><td>叠加效应</td><td>1+1 = 2</td><td>1+1 < 2 ⚠️</td><td>1+1 < 2 ⚠️</td><td>1+1 < 2 ⚠️</td></tr>
+        <tr><td>账号等级</td><td>会员季度 > 非会员月度</td><td>会员季度 > 非会员月度</td><td>会员月度 = 非会员月度</td><td>会员月度 = 非会员月度</td></tr>
+        <tr><td>资源/容器型</td><td>短期资源</td><td>长期容器</td><td>长期容器</td><td>长期容器</td></tr>
+        <tr><td>勤奋度（回复率）</td><td>发帖量↑→曝光量↑</td><td>回复率↑ →曝光量↑</td><td>回复率↑ →曝光量↑</td><td>回复率↑ →曝光量↑</td></tr>
+        <tr><td>职位质量</td><td>—</td><td>质量高 → 流量↑</td><td>质量高 → 流量↑</td><td>质量高 + 置顶位置→ 流量↑</td></tr>
+        <tr><td>新账号优势</td><td>新账号 > 老账号</td><td>新账号 > 旧账号</td><td>新账号 > 旧账号</td><td>新账号 > 旧账号</td></tr>
+        <tr><td>商业曝光</td><td>独立曝光 → 流量↑</td><td>独立曝光 → 流量↑</td><td>独立曝光 → 流量↑</td><td>独立曝光 → 流量↑（质量高于开聊）</td></tr>
+        <tr><td>新发职位</td><td>发帖3–7天自然流量好</td><td>灵活多变 → 总流量兜底</td><td>灵活多变 → 总流量兜底</td><td>灵活多变 → 总流量兜底</td></tr>
+        <tr><td>客户效果体验</td><td>新发贴 · 新账号 · 会员 · 商业</td><td>登录 · 回复率 · 新发</td><td>登录 · 回复率 · 新发</td><td>登录 · 回复率 · 新发 · 增值</td></tr>
+      </tbody>
+    </table>
+    <div class="effect-note">* 效果机制为影响各版本流量与转化的关键因子，供销售沟通与客户预期管理参考。</div>
+  </div>
+</div>
+
+<!-- ==================== 职小乐 27年 (V4) ==================== -->
+<div class="cards-view three-col" id="cards-zhixiaole" style="display:none">
+  <!-- 季度版 -->
+  <div class="plan-card has-season">
+    <span class="card-tag tag-custom">定制/框架自选</span>
+    <div class="card-title">季度版</div>
+    <div class="card-season-toggle" data-peak="2,300" data-off="1,800">
+      <button class="card-season-btn peak active" onclick="setSeason('peak')">☀️ 旺</button>
+      <button class="card-season-btn off" onclick="setSeason('off')">❄️ 淡</button>
+    </div>
+    <div class="price-block">
+      <div class="price-main"><span class="currency">¥</span><span class="price-val" data-peak="2,300" data-off="1,800">2,300</span><span class="period">季⭐降价</span><span class="price-season peak-tag">旺季</span></div>
+      <div class="price-alt"><span class="strike peak-price">旺季 ¥2,300</span> <span class="save">淡季省¥500</span></div>
+      <div class="price-daily">日均 <span class="daily-val" data-peak="25" data-off="≈19.6">¥25</span></div>
+      <div class="price-daily">日均/职位 <span class="daily-val" data-peak="0.83" data-off="0.65">¥0.83</span></div>
+      <div class="price-formula">旺季 2300≈1×200+30×66+1×100+1×50←1300 =2330</div>
+    </div>
+    <div class="season-compare-in"><div class="sc-row"><span class="sc-peak">¥2,300</span><span class="sc-arrow">→</span><span class="sc-off">¥1,800</span></div><div class="sc-save">淡季省 22%</div></div>
+    <div class="card-subtitle">同时代招30个职位</div>
+    <div class="card-customer">客户需求：人力-职小乐 ｜ 典型客户：仅代招类</div>
+    <ul class="card-features">
+      <li><span class="icon">📌</span>劲爆职位（全容器）：30个 × 92天</li>
+      <li><span class="icon">💬</span>主动开聊：100人/日 × 365天</li>
+      <li><span class="icon">📂</span>类目：禁发：保安、司机、游戏代练、就业培训</li>
+      <li><span class="icon">🎁</span>增值产品：代招公司 50个</li>
+      <li><span class="icon">📋</span>叠加上限：3个，固定时长</li>
+    </ul>
+    <div class="card-bonus"><strong>赠送权益：</strong>92天 / 15个 / 30天 / uid</div>
+    <div style="margin-top:10px;padding:9px;background:#f0f9ff;border-radius:10px;font-size:12px;color:#1e40af;border:1px solid #bfdbfe">
+      <div style="font-weight:700;margin-bottom:4px">☀️ 旺季 ¥2,300 → ❄️ 淡季 ¥1,800 <span style="background:#ecfdf5;color:#059669;padding:1px 6px;border-radius:4px;font-size:11px;margin-left:4px">省22%</span></div>
+      <div style="font-weight:700;color:#7c3aed">📦 批量折扣：100+个 2,300 → 1,800</div>
+    </div>
+  </div>
+  <!-- 年度go -->
+  <div class="plan-card featured has-season">
+    <span class="card-tag tag-bundle">套餐打包&定制/框架自选</span>
+    <div class="card-title">年度 go</div>
+    <div class="card-season-toggle" data-peak="2,300" data-off="2,300">
+      <button class="card-season-btn peak active" onclick="setSeason('peak')">☀️ 旺</button>
+      <button class="card-season-btn off" onclick="setSeason('off')">❄️ 淡</button>
+    </div>
+    <div class="price-block">
+      <div class="price-main"><span class="currency">¥</span><span class="price-val" data-peak="2,300" data-off="2,300">2,300</span><span class="period">+500招聘币 年⭐涨价</span></div>
+      <div class="price-alt"><span class="save" style="color:#059669">淡旺季同价</span></div>
+      <div class="price-daily">日均 <span class="daily-val" data-peak="≈6.3" data-off="≈6.3">¥6.3</span></div>
+      <div class="price-daily">日均/职位 <span class="daily-val" data-peak="0.79" data-off="0.79">¥0.79</span></div>
+      <div class="price-formula">旺季 2300≈1×500+8×166←440+1×300+1×200←2400 =2328</div>
+    </div>
+    <div class="season-compare-in"><div class="sc-row"><span class="sc-peak">¥2,300</span><span class="sc-arrow">=</span><span class="sc-off">¥2,300</span></div><div class="sc-same">淡旺季无差异</div></div>
+    <div class="card-subtitle">长期稳定代招</div>
+    <div class="card-customer">客户需求：人力-职小乐 ｜ 典型客户：仅代招类</div>
+    <ul class="card-features">
+      <li><span class="icon">📦</span><span class="red-bold">劲爆职位（全容器）：8个 × 365天</span></li>
+      <li><span class="icon red-bold">📦</span><span class="red-bold">劲爆同城多地址：有</span></li>
+      <li><span class="icon">💬</span>主动开聊：100人/日 × 365天</li>
+      <li><span class="icon">📂</span>类目：禁发：保安、司机、游戏代练、就业培训</li>
+      <li><span class="icon">🎁</span>增值产品：代招公司 套餐8个/定框50个，500招聘币</li>
+      <li><span class="icon">📋</span>叠加上限：3个，固定时长</li>
+    </ul>
+    <div class="card-bonus"><strong>赠送权益：</strong>92天 / 15个 / 30天 / uid</div>
+    <div style="margin-top:10px;padding:9px;background:#f0f9ff;border-radius:10px;font-size:12px;color:#1e40af;border:1px solid #bfdbfe">
+      <div style="font-weight:700;margin-bottom:4px">💰 淡旺季同价 ¥2,300 + 500招聘币</div>
+    </div>
+  </div>
+  <!-- 年度版plus -->
+  <div class="plan-card has-season">
+    <span class="card-tag tag-custom">定制/框架自选</span>
+    <div class="card-title">年度版 plus</div>
+    <div class="card-season-toggle" data-peak="5,400" data-off="3,600">
+      <button class="card-season-btn peak active" onclick="setSeason('peak')">☀️ 旺</button>
+      <button class="card-season-btn off" onclick="setSeason('off')">❄️ 淡</button>
+    </div>
+    <div class="price-block">
+      <div class="price-main"><span class="currency">¥</span><span class="price-val" data-peak="5,400" data-off="3,600">5,400</span><span class="period">年</span><span class="price-season peak-tag">旺季</span></div>
+      <div class="price-alt"><span class="strike peak-price">旺季 ¥5,400</span> <span class="save">淡季省¥1,800</span></div>
+      <div class="price-daily">日均 <span class="daily-val" data-peak="≈14.8" data-off="≈9.9">¥14.8</span></div>
+      <div class="price-daily">日均/职位 <span class="daily-val" data-peak="0.99" data-off="0.66">¥0.99</span></div>
+      <div class="price-formula">旺季 5400≈1×500+15×166←440+1×300+1×2200←2400 =5490</div>
+    </div>
+    <div class="card-subtitle">长期稳定代招</div>
+    <div class="card-customer">客户需求：年度锁定 ｜ 典型客户：仅代招类</div>
+    <ul class="card-features">
+      <li><span class="icon">📦</span><span class="red-bold">劲爆职位（全容器）：15个 × 365天（+7个）</span></li>
+      <li><span class="icon red-bold">📦</span><span class="red-bold">劲爆同城多地址：有</span></li>
+      <li><span class="icon">💬</span>主动开聊：100人/日 × 365天</li>
+      <li><span class="icon">📂</span>类目：仅可发布：普工技工、生产制造、司机物流、安保消防</li>
+      <li><span class="icon">🎁</span>增值产品：代招公司 100个（+50个）</li>
+      <li><span class="icon">📋</span>叠加上限：3个，框架折价，定制固定时长</li>
+    </ul>
+    <div class="card-bonus"><strong>赠送权益：</strong>92天 / 15个 / 30天 / uid</div>
+    <div style="margin-top:10px;padding:9px;background:#f0f9ff;border-radius:10px;font-size:12px;color:#1e40af;border:1px solid #bfdbfe">
+      <div style="font-weight:700;margin-bottom:4px">☀️ 旺季 ¥5,400 → ❄️ 淡季 ¥3,600 <span style="background:#ecfdf5;color:#059669;padding:1px 6px;border-radius:4px;font-size:11px;margin-left:4px">省33%</span></div>
+      <div style="font-weight:700;color:#7c3aed">📦 批量折扣：100+个 6,000 → 3,600</div>
+    </div>
+  </div>
+</div>
+
+<!-- 职小乐 27年 Table (V4) -->
+<div class="table-section" id="table-zhixiaole">
+  <div class="table-title">职小乐 · 权益详情对比</div>
+  <table class="compare-table">
+    <thead>
+      <tr><th>对比项</th><th>季度版</th><th>年度go</th><th>年度版plus</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>类型</td><td>定制/框架自选</td><td>套餐打包&定制/框架自选</td><td>定制/框架自选</td></tr>
+      <tr class="price-row"><td>定价</td><td>¥2,300 季⭐降价</td><td>¥2,300+500招聘币 年⭐涨价</td><td>¥5,400 年</td></tr>
+      <tr><td>时长</td><td>92天</td><td>365天</td><td>365天</td></tr>
+      <tr><td>日均成本</td><td>¥25</td><td>¥6.3</td><td>¥14.8</td></tr>
+      <tr><td>日均成本/职位（旺季）</td><td>¥0.83</td><td>¥0.79</td><td>¥0.99</td></tr>
+      <tr><td>日均成本/职位（淡季）</td><td>¥0.65</td><td>¥0.79</td><td>¥0.66</td></tr>
+      <tr><td>核心卖点</td><td>同时代招30个职位</td><td>招聘需求多变</td><td>长期稳定代招</td></tr>
+      <tr><td>客户需求</td><td>人力-职小乐</td><td>人力-职小乐</td><td>年度锁定</td></tr>
+      <tr><td>典型客户</td><td>仅代招类</td><td>仅代招类</td><td>仅代招类</td></tr>
+      <tr><td colspan="4" class="section-header">▎ 权益详情</td></tr>
+      <tr><td>劲爆职位（全容器）</td><td>📌 30个 × 92天</td><td class="red-bold">📦 8个 × 365天</td><td class="red-bold">📦 15个 × 365天（+7个）</td></tr>
+      <tr><td>劲爆同城多地址</td><td>无</td><td class="red-bold">有</td><td class="red-bold">有</td></tr>
+      <tr><td>主动开聊</td><td>100人/日 × 365天</td><td>100人/日 × 365天</td><td>100人/日 × 365天</td></tr>
+      <tr><td>类目</td><td>禁发：保安、司机、游戏代练、就业培训</td><td>禁发：保安、司机、游戏代练、就业培训</td><td>仅可发布：普工技工、生产制造、司机物流、安保消防</td></tr>
+      <tr><td>增值产品</td><td>代招公司 50个</td><td>代招公司 套餐8个/定框50个，500招聘币</td><td>代招公司 100个（+50个）</td></tr>
+      <tr class="season-row highlight-peak" data-season="peak"><td>刊例价（旺季）</td><td class="formula-cell">2300≈1×200+30×66+1×100+1×50←1300 =2330</td><td class="formula-cell">2300≈1×500+8×166←440+1×300+1×200←2400 =2328</td><td class="formula-cell">5400≈1×500+15×166←440+1×300+1×2200←2400 =5490</td></tr>
+      <tr class="season-row highlight-off" data-season="off"><td class="red-bold">刊例价（淡季 new）</td><td style="color:var(--off);font-weight:800" class="red-bold">¥1,800</td><td class="red-bold">¥2,300</td><td class="red-bold">¥3,600</td></tr>
+      <tr><td class="red-bold">批量采购折扣价</td><td class="red-bold">100+个可享折扣 2300 → 1800</td><td class="red-bold">-</td><td class="red-bold">100+个可享折扣 6000 → 3600</td></tr>
+      <tr><td>叠加上限</td><td>3个，固定时长</td><td>3个，固定时长</td><td>3个，框架折价，定制固定时长</td></tr>
+      <tr><td>赠送权益</td><td>92天 / 15个 / 30天 / uid</td><td>92天 / 15个 / 30天 / uid</td><td>92天 / 15个 / 30天 / uid</td></tr>
+    </tbody>
+  </table>
+
+  <div class="effect-table">
+    <div class="table-title">▎ 效果详情 · 哪个版本更适合你的客户</div>
+    <table class="compare-table">
+      <thead>
+        <tr><th>对比项</th><th>季度版</th><th>年度</th><th>年度版plus⭐</th></tr>
+      </thead>
+      <tbody>
+        <tr class="price-row"><td>定价</td><td>¥2,300</td><td>¥2,300+500招聘币</td><td>¥5,400 ⭐</td></tr>
+        <tr><td>叠加效应</td><td>1+1 = 2</td><td>1+1 < 2 ⚠️</td><td>1+1 < 2 ⚠️</td></tr>
+        <tr><td>客户效果体验</td><td>新发贴 · 新账号 · 会员 · 商业</td><td>登录 · 回复率 · 新发</td><td>登录 · 回复率 · 新发</td></tr>
+      </tbody>
+    </table>
+    <div class="effect-note">* 效果机制为影响各版本流量与转化的关键因子，供销售沟通与客户预期管理参考。</div>
+  </div>
+</div>
+
+<!-- ==================== 赶集伯小乐 (V4 updated) ==================== -->
+<div class="cards-view" id="cards-ganji" style="display:none">
+  <div class="plan-card featured">
+    <span class="card-tag tag-bundle">套餐打包</span>
+    <div class="card-title">年度容器版 ⭐</div>
+    <div class="price-block">
+      <div class="price-main"><span class="currency">¥</span>2,200<span class="period">365天</span></div>
+      <div class="price-daily">日均 ¥6</div>
+      <div class="price-daily">日均/职位 ¥1.2</div>
+    </div>
+    <div class="card-subtitle">直招专属版（套餐打包不单售）</div>
+    <div class="card-customer">客户需求：大服务 ｜ 典型客户：仅直招类</div>
+    <ul class="card-features">
+      <li><span class="icon">📦</span>劲爆职位（容器）：8个 × 365天（+3个）</li>
+      <li><span class="icon red-bold">📦</span><span class="red-bold">劲爆同城多地址：有</span></li>
+      <li><span class="icon">💬</span>主动开聊：200人/日 × 365天（多1倍）</li>
+      <li><span class="icon">📂</span>类目：单独付费类目：普工/技工、生产制造、司机/物流、安保消防、家政服务</li>
+      <li><span class="icon">🎁</span>增值产品：无</li>
+      <li><span class="icon">📋</span>叠加上限：3个</li>
+    </ul>
+    <div class="card-bonus"><strong>赠送权益：</strong>专享容器 +1 / 套餐（仅限发布5大类）· 不支持主动开聊</div>
+  </div>
+  <div class="plan-card">
+    <span class="card-tag tag-custom">定制自选</span>
+    <div class="card-title">年度容器Pro</div>
+    <div class="price-block">
+      <div class="price-main"><span class="currency">¥</span>3,000<span class="period">365天</span></div>
+      <div class="price-daily">日均 ¥8</div>
+      <div class="price-daily">日均/职位 ¥1.6</div>
+    </div>
+    <div class="card-subtitle">直招专属版 · 曝光加持</div>
+    <div class="card-customer">客户需求：大服务 ｜ 典型客户：仅直招类</div>
+    <ul class="card-features">
+      <li><span class="icon">📦</span>劲爆职位（容器）：8个 × 365天（+3个）</li>
+      <li><span class="icon red-bold">📦</span><span class="red-bold">劲爆同城多地址：有</span></li>
+      <li><span class="icon">💬</span>主动开聊：200人/日 × 365天（多1倍）</li>
+      <li><span class="icon">📂</span>类目：单独付费类目：普工/技工、生产制造、司机/物流、安保消防、家政服务</li>
+      <li><span class="icon">🎁</span>增值产品：12张7天超级置顶曝光 / 30天 / 1个职位</li>
+      <li><span class="icon">📋</span>叠加上限：3个</li>
+    </ul>
+    <div class="card-bonus"><strong>赠送权益：</strong>92天 / 15个 / 30天 / uid</div>
+  </div>
+</div>
+
+<!-- 赶集 Table (V4 updated) -->
+<div class="table-section" id="table-ganji">
+  <div class="table-title">赶集伯小乐 · 权益详情对比 <span style="font-size:13px;color:var(--muted);font-weight:400">（26年→27年不变）</span></div>
+  <table class="compare-table">
+    <thead>
+      <tr><th>对比项</th><th>年度容器版⭐</th><th>年度容器Pro</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>类型</td><td>套餐打包</td><td>定制自选</td></tr>
+      <tr class="price-row"><td>定价</td><td>¥2,200 365天</td><td>¥3,000 365天</td></tr>
+      <tr><td>时长</td><td>365天</td><td>365天</td></tr>
+      <tr><td>日均成本</td><td>¥6</td><td>¥8</td></tr>
+      <tr><td>日均成本/职位</td><td>¥1.2</td><td>¥1.6</td></tr>
+      <tr><td>核心卖点</td><td>直招专属版（套餐打包不单售）</td><td>直招专属版 · 曝光加持</td></tr>
+      <tr><td>客户需求</td><td>大服务</td><td>大服务</td></tr>
+      <tr><td>典型客户</td><td>仅直招类</td><td>仅直招类</td></tr>
+      <tr><td colspan="3" class="section-header">▎ 权益详情</td></tr>
+      <tr><td>劲爆职位（容器）</td><td>📦 8个 × 365天（+3个）</td><td>📦 8个 × 365天（+3个）</td></tr>
+      <tr><td>劲爆同城多地址</td><td class="red-bold">有</td><td class="red-bold">有</td></tr>
+      <tr><td>主动开聊</td><td>200人/日 × 365天（多1倍）</td><td>200人/日 × 365天（多1倍）</td></tr>
+      <tr><td>类目</td><td colspan="2">单独付费类目：普工/技工、生产制造、司机/物流、安保消防、家政服务</td></tr>
+      <tr><td>增值产品</td><td>无</td><td>12张7天超级置顶曝光 / 30天 / 1个职位</td></tr>
+      <tr class="highlight-peak"><td>刊例价</td><td class="formula-cell">2200≈1×500+8×138←220+2×300 =2204</td><td class="formula-cell">4604=(1×500+6×138←220+1×2400+2×300)×65折</td></tr>
+      <tr><td>叠加上限</td><td>3个</td><td>3个</td></tr>
+      <tr><td>赠送权益</td><td>专享容器 +1 / 套餐（仅限发布5大类）· 不支持主动开聊</td><td>92天 / 15个 / 30天 / uid</td></tr>
+      <tr><td colspan="3" class="section-header">▎ 效果权益 · 哪个版本更适合你的客户</td></tr>
+      <tr class="price-row"><td>定价</td><td>¥2,200 365天</td><td>¥3,000 365天</td></tr>
+      <tr><td>关注指标</td><td>到面率、简历质量</td><td>到面率、简历质量</td></tr>
+      <tr><td></td><td>（年龄不符 / 重合率高 / 爽约率高）</td><td>（年龄不符 / 重合率高 / 爽约率高）</td></tr>
+      <tr><td>商业曝光</td><td>灵工渠道</td><td>灵工渠道</td></tr>
+      <tr><td>客户效果体验</td><td>线索量 · 简历质量</td><td>线索量 · 简历质量</td></tr>
+    </tbody>
+  </table>
+  <div class="effect-note">* 效果机制为影响各版本流量与转化的关键因子，供销售沟通与客户预期管理参考。</div>
+</div>
+
+<!-- ==================== 与26年对比 ==================== -->
+<div class="diff-section" id="diff-section">
+
+  <!-- 58伯小乐 -->
+  <div class="diff-product">
+    <div class="diff-product-header">
+      <h3>58伯小乐</h3>
+      <span class="diff-badge diff-badge-up">结构升级</span>
+    </div>
+    <div class="diff-cards">
+      <div class="diff-card">
+        <span class="diff-card-tag diff-tag-price">定价调整</span>
+        <div class="diff-card-title">年度版涨价 + 季度版淡旺季</div>
+        <div class="diff-card-body">
+          1、套餐打包&amp;定制/框架自选的年度伯小乐go <span class="diff-highlight">¥1,800 → ¥2,300</span><br>
+          2、定制/框架季度版伯小乐区分淡旺季定价 <span class="diff-highlight">¥2,300 → ¥1,800</span><br>
+          3、故所有套餐内币对应减少500+
+        </div>
+      </div>
+      <div class="diff-card">
+        <span class="diff-card-tag diff-tag-upgrade">资源升级</span>
+        <div class="diff-card-title">劲爆职位：资源→容器 + 扩容</div>
+        <div class="diff-card-body">
+          1、年度伯小乐go <span class="diff-highlight">8个劲爆职位点（资源）→ 8个劲爆职位（容器）</span><br>
+          2、年度伯小乐plus <span class="diff-highlight">8个（容器）→ 15个（容器）</span>，价格不变<br>
+          3、季度版保留30个劲爆职位点（资源）
+        </div>
+      </div>
+      <div class="diff-card">
+        <span class="diff-card-tag diff-tag-new">新增功能</span>
+        <div class="diff-card-title">劲爆同城多地址</div>
+        <div class="diff-card-body">
+          容器同城的发帖工作地址信息中，<span class="diff-highlight-green">可勾选展示多个地址</span>
+        </div>
+      </div>
+      <div class="diff-card">
+        <span class="diff-card-tag diff-tag-drop">刊例价降价</span>
+        <div class="diff-card-title">不限类刊例单价大幅下调</div>
+        <div class="diff-card-body">
+          不限类刊例单价 <span class="diff-highlight">¥560 → ¥188</span><br>
+          降幅达 66%，降低客户发布成本
+        </div>
+      </div>
+    </div>
+    <div class="diff-summary">
+      <strong>总结：</strong>58伯小乐27年从5个版本精简为4个（季度版/年度版go/年度版plus/年度版pro）。劲爆职位从"资源点"升级为"容器"，年度版扩容至8~15个。刊例价单价从¥560降至¥188。
+    </div>
+  </div>
+
+  <!-- 职小乐 -->
+  <div class="diff-product">
+    <div class="diff-product-header">
+      <h3>职小乐</h3>
+      <span class="diff-badge diff-badge-up">结构升级</span>
+    </div>
+    <div class="diff-cards five-col">
+      <div class="diff-card">
+        <span class="diff-card-tag diff-tag-price">定价调整</span>
+        <div class="diff-card-title">年度版涨价 + 季度版降价</div>
+        <div class="diff-card-body">
+          1、套餐打包&amp;定制/框架自选的年度职小乐go <span class="diff-highlight">¥1,800 → ¥2,300</span><br>
+          2、定制/框架季度版职小乐区分淡旺季定价 <span class="diff-highlight">¥3,600 → ¥2,300</span>（淡季¥1,800）<br>
+          3、故所有套餐内币对应减少500+
+        </div>
+      </div>
+      <div class="diff-card">
+        <span class="diff-card-tag diff-tag-upgrade">资源升级</span>
+        <div class="diff-card-title">劲爆职位：资源→容器 + 扩容</div>
+        <div class="diff-card-body">
+          1、年度职小乐go <span class="diff-highlight">8个劲爆职位点（资源）→ 8个劲爆职位（容器）</span><br>
+          2、年度职小乐plus <span class="diff-highlight">8个（容器）→ 15个（容器）</span>，价格不变<br>
+          3、季度版保留30个劲爆职位点（资源）
+        </div>
+      </div>
+      <div class="diff-card">
+        <span class="diff-card-tag diff-tag-new">新增功能</span>
+        <div class="diff-card-title">劲爆同城多地址</div>
+        <div class="diff-card-body">
+          容器同城的发帖工作地址信息中，<span class="diff-highlight-green">可勾选展示多个地址</span>
+        </div>
+      </div>
+      <div class="diff-card">
+        <span class="diff-card-tag diff-tag-drop">增值产品调整</span>
+        <div class="diff-card-title">代招公司降价 + 扩容</div>
+        <div class="diff-card-body">
+          1、代招公司50个刊例价 <span class="diff-highlight">¥2,400 → ¥200/年</span><br>
+          2、现有版本→代招公司增至100个，刊例价 <span class="diff-highlight">¥2,200元/年</span>
+        </div>
+      </div>
+      <div class="diff-card">
+        <span class="diff-card-tag diff-tag-drop">刊例价降价</span>
+        <div class="diff-card-title">限类刊例单价大幅下调</div>
+        <div class="diff-card-body">
+          限类刊例单价 <span class="diff-highlight">¥440 → ¥166</span>（风控禁发类）<br>
+          ¥166（仅4大类可发）；¥188（不限类）
+        </div>
+      </div>
+    </div>
+    <div class="diff-summary">
+      <strong>总结：</strong>职小乐27年从4个版本精简为3个（季度版/年度go/年度版plus）。劲爆职位从"资源点"升级为"容器"，年度版扩容至8~15个。代招公司刊例价大幅下降，限类刊例从¥440降至¥166。
+    </div>
+  </div>
+
+  <!-- 赶集伯小乐 -->
+  <div class="diff-product">
+    <div class="diff-product-header">
+      <h3>赶集伯小乐</h3>
+      <span class="diff-badge diff-badge-same">价格不变</span>
+    </div>
+    <div class="diff-cards">
+      <div class="diff-card">
+        <span class="diff-card-tag diff-tag-new">不变</span>
+        <div class="diff-card-title">价格不变，套餐不变</div>
+        <div class="diff-card-body">
+          年度容器版 ¥2,200 / 年度容器Pro ¥3,000<br>
+          <span class="diff-highlight-green">26→27年价格与套餐结构均不变</span>
+        </div>
+      </div>
+      <div class="diff-card">
+        <span class="diff-card-tag diff-tag-upgrade">资源升级</span>
+        <div class="diff-card-title">劲爆职位扩容</div>
+        <div class="diff-card-body">
+          <span class="diff-highlight">5个劲爆职位点（容器）→ 8个劲爆职位（容器）</span><br>
+          两个版本均扩容，增幅 60%
+        </div>
+      </div>
+      <div class="diff-card">
+        <span class="diff-card-tag diff-tag-new">新增功能</span>
+        <div class="diff-card-title">劲爆同城多地址</div>
+        <div class="diff-card-body">
+          容器同城的发帖工作地址信息中，<span class="diff-highlight-green">可勾选展示多个地址</span>
+        </div>
+      </div>
+      <div class="diff-card">
+        <span class="diff-card-tag diff-tag-drop">刊例价降价</span>
+        <div class="diff-card-title">限类刊例单价下调</div>
+        <div class="diff-card-body">
+          限类刊例单价 <span class="diff-highlight">¥220 → ¥138</span><br>
+          降幅 37%
+        </div>
+      </div>
+    </div>
+    <div class="diff-summary">
+      <strong>总结：</strong>赶集伯小乐26→27年价格与套餐结构不变。核心变化：劲爆职位从5个扩容至8个（+60%），新增同城多地址能力，限类刊例单价从¥220降至¥138。
+    </div>
+  </div>
+
+</div>
+
+<script>
+const themes = {
+  boxiaole: { accent:'#ea580c', soft:'#fff7ed', badge:'58全网招 · 伯小乐', title:'58伯小乐 · 2027年定价', sub:'季度版 / 年度版go / 年度版plus / 年度版pro 四个版本，新增淡旺季定价' },
+  zhixiaole: { accent:'#dc2626', soft:'#fef2f2', badge:'58全网招 · 职小乐', title:'职小乐 · 2027年定价', sub:'季度版 / 年度go / 年度版plus 三个版本，淡季折扣力度显著' },
+  ganji:    { accent:'#16a34a', soft:'#f0fdf4', badge:'赶集 · 伯小乐', title:'赶集伯小乐 · 26→27年不变', sub:'年度容器版 / 年度容器Pro 两个版本，大服务行业直招专属' },
+  diff:     { accent:'#7c3aed', soft:'#f5f3ff', badge:'27年 vs 26年', title:'与26年变化对比', sub:'伯小乐 · 职小乐 · 赶集伯小乐 三条产品线 26→27年核心变化总览' }
+};
+
+// Season pricing data for compare strip
+const seasonData = {
+  boxiaole: [
+    { name:'季度版', peak:'2,300', off:'1,800', save:'22%' },
+    { name:'年度版go', peak:'2,300', off:'2,300', save:'-' },
+    { name:'年度版plus', peak:'3,600', off:'3,600', save:'-' },
+    { name:'年度版pro', peak:'6,000', off:'6,000', save:'-' }
+  ],
+  zhixiaole: [
+    { name:'季度版', peak:'2,300', off:'1,800', save:'22%' },
+    { name:'年度go', peak:'2,300', off:'2,300', save:'-' },
+    { name:'年度版plus', peak:'5,400', off:'3,600', save:'33%' }
+  ],
+  ganji: []
+};
+
+let currentTab = 'boxiaole';
+let currentView = 'cards';
+let currentSeason = 'peak';
+let showFormula = false;
+
+// Season toggle
+function setSeason(s) {
+  currentSeason = s;
+  document.querySelectorAll('.season-btn').forEach(b => b.classList.remove('active'));
+  document.querySelector('.season-btn.' + s).classList.add('active');
+  // Sync in-card toggles
+  document.querySelectorAll('.card-season-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.season === s);
+  });
+  // Hide in-card toggles when no season diff
+  document.querySelectorAll('.card-season-toggle').forEach(toggle => {
+    const peak = toggle.dataset.peak;
+    const off = toggle.dataset.off;
+    toggle.style.display = peak === off ? 'none' : 'flex';
+  });
+  updatePrices();
+  renderSeasonCompare();
+}
+
+function updatePrices() {
+  const isPeak = currentSeason === 'peak';
+  // Update card prices
+  document.querySelectorAll('.price-val').forEach(el => {
+    const val = isPeak ? el.dataset.peak : el.dataset.off;
+    el.textContent = val;
+    el.closest('.price-main').classList.toggle('price-peak', isPeak && el.dataset.peak !== el.dataset.off);
+    el.closest('.price-main').classList.toggle('price-off', !isPeak && el.dataset.peak !== el.dataset.off);
+  });
+  // Update daily
+  document.querySelectorAll('.daily-val').forEach(el => {
+    el.textContent = '¥' + (isPeak ? el.dataset.peak : el.dataset.off);
+  });
+  // Update season tags
+  document.querySelectorAll('.price-season').forEach(el => {
+    el.style.display = (el.closest('.price-block').querySelector('.price-val').dataset.peak === el.closest('.price-block').querySelector('.price-val').dataset.off) ? 'none' : 'inline-block';
+    el.textContent = isPeak ? '旺季' : '淡季';
+    el.className = 'price-season ' + (isPeak ? 'peak-tag' : 'off-tag');
+  });
+  // Update alt prices
+  document.querySelectorAll('.price-alt').forEach(el => {
+    const block = el.closest('.price-block');
+    const pv = block.querySelector('.price-val');
+    if (pv.dataset.peak === pv.dataset.off) { el.style.visibility = 'hidden'; return; }
+    el.style.visibility = 'visible';
+    if (isPeak) {
+      el.innerHTML = '<span style="color:var(--peak);font-weight:600">☀️ 旺季刊例价</span>';
+    } else {
+      el.innerHTML = '<span class="strike">旺季 ¥' + pv.dataset.peak + '</span> <span class="save">淡季折扣</span>';
+    }
+  });
+  // Update season diff badges
+  document.querySelectorAll('.season-diff').forEach(el => {
+    el.className = 'season-diff ' + (isPeak ? 'peak-mode' : 'off-mode');
+  });
+  // Update table season rows
+  document.querySelectorAll('.season-row').forEach(row => {
+    const rs = row.dataset.season;
+    if (rs === 'peak') {
+      row.style.display = isPeak ? '' : 'none';
+    } else {
+      row.style.display = !isPeak ? '' : 'none';
+    }
+  });
+}
+
+function renderSeasonCompare() {
+  // Season compare strip removed — comparison now shown inside each card
+}
+
+// Tabs
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentTab = btn.dataset.tab;
+    const t = themes[currentTab];
+    document.documentElement.style.setProperty('--accent', t.accent);
+    document.documentElement.style.setProperty('--accent-soft', t.soft);
+    document.getElementById('heroBadge').textContent = t.badge;
+    document.getElementById('heroTitle').textContent = t.title;
+    document.getElementById('heroSub').textContent = t.sub;
+    renderView();
+  });
+});
+
+function renderView() {
+  ['boxiaole','zhixiaole','ganji'].forEach(k => {
+    document.getElementById('cards-'+k).style.display = 'none';
+    document.getElementById('table-'+k).classList.remove('active');
+  });
+  const diffSection = document.getElementById('diff-section');
+  const viewToggle = document.querySelector('.view-toggle');
+  const seasonToggle = document.querySelector('.season-toggle');
+  const seasonDesc = document.querySelector('.season-desc');
+  if (currentTab === 'diff') {
+    diffSection.classList.add('active');
+    viewToggle.style.display = 'none';
+    seasonToggle.style.display = 'none';
+    seasonDesc.style.display = 'none';
+  } else {
+    diffSection.classList.remove('active');
+    viewToggle.style.display = '';
+    seasonToggle.style.display = '';
+    seasonDesc.style.display = '';
+    if (currentView === 'cards') {
+      document.getElementById('cards-'+currentTab).style.display = 'grid';
+    } else {
+      document.getElementById('table-'+currentTab).classList.add('active');
+    }
+    renderSeasonCompare();
+    updatePrices();
+  }
+}
+
+function switchView(view) {
+  currentView = view;
+  document.getElementById('btnCards').classList.toggle('active', view==='cards');
+  document.getElementById('btnTable').classList.toggle('active', view==='table');
+  document.getElementById('btnFormula').classList.toggle('active', showFormula);
+  renderView();
+}
+
+function toggleFormula() {
+  showFormula = !showFormula;
+  document.getElementById('btnFormula').classList.toggle('active', showFormula);
+  document.querySelectorAll('.plan-card').forEach(c => c.classList.toggle('show-formula', showFormula));
+}
+
+// Init
+updatePrices();
+renderSeasonCompare();
+</script>
+</body>
+</html>
